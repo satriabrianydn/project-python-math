@@ -99,10 +99,12 @@ ScreenManager:
             halign: 'center'
             font_style: 'H4'
 
-        MDRaisedButton:
-            text: 'Lanjutkan'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.next_question()
+        MDLabel:
+            id: feedback_label
+            text: ''
+            halign: 'center'
+            font_style: 'Subtitle1'
+            theme_text_color: 'Secondary'
 
         MDRaisedButton:
             text: 'Main lagi'
@@ -163,6 +165,10 @@ class MathGameApp(MDApp):
         user_answer = self.sm.get_screen('game').ids.answer.text
         feedback_label = self.sm.get_screen('game').ids.feedback
 
+        if user_answer.strip() == '':
+            feedback_label.text = "Silakan masukkan jawaban!"
+            return
+
         try:
             if self.operation == '/':
                 user_answer = float(user_answer)
@@ -182,7 +188,7 @@ class MathGameApp(MDApp):
 
         feedback_label.text = feedback_message
 
-        # Pindah ke layar hasil setelah 1 detik
+        # Kirim pesan feedback ke layar hasil
         Clock.schedule_once(self.show_result, 1)
 
     def show_result(self, *args):
@@ -193,7 +199,8 @@ class MathGameApp(MDApp):
             self.generate_question()
         else:
             result_text = f"Kamu menjawab {self.score} dari {self.total_questions} soal dengan benar!"
-            self.sm.get_screen('result').ids.result_label.text = result_text
+            result_screen = self.sm.get_screen('result')
+            result_screen.ids.result_label.text = result_text
             self.sm.current = 'result'
 
     def restart_game(self):
