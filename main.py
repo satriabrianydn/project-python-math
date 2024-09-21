@@ -188,7 +188,7 @@ class MathGameApp(MDApp):
 
         feedback_label.text = feedback_message
 
-        # Kirim pesan feedback ke layar hasil
+        
         Clock.schedule_once(self.show_result, 1)
 
     def show_result(self, *args):
