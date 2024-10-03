@@ -20,4 +20,4 @@ $ pip install kivymd
 ```
 $ py main.py
 ```
-4. Done!
+5. Done!
