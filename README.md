@@ -11,7 +11,7 @@ Note: Install Python plugin on Visual Studio Code (Required)
 ```
 $ git clone https://github.com/satriabrianydn/project-python-math
 ```
-2. Then, open projet folder on Visual Studio Code
+2. Then, open project folder on Visual Studio Code
 3. Install Kivy/KivyMD Framework by type command in below
 ```
 $ pip install kivy kivymd
