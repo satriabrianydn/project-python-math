@@ -14,162 +14,6 @@ from kivy.animation import Animation
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
 
-KV = '''
-ScreenManager:
-    MainScreen:
-    MenuScreen:
-    GameScreen:
-    ResultScreen:
-
-<MainScreen>:
-    name: 'main'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            # Gambar latar belakang
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 40
-        spacing: 40
-
-        Image:
-            source: 'images/logo.png'
-            size_hint: (None, None)
-            size: 200, 200
-            pos_hint: {"center_x": 0.5}
-
-        MDLabel:
-            id: welcome_label
-            text: 'Selamat Datang!'
-            halign: 'center'
-            font_style: 'H4'
-            font_name: 'fonts/Roboto-Medium.ttf'
-            theme_text_color: 'Custom'
-            text_color: 0, 0, 0.5, 1
-
-        MDRaisedButton:
-            text: 'Mulai Permainan'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.sm.current = 'menu'
-
-<MenuScreen>:
-    name: 'menu'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-
-        MDLabel:
-            text: 'Pilih Level Kelas'
-            halign: 'center'
-            font_style: 'H4'
-            font_name: 'fonts/Roboto-Medium.ttf'
-            color: 0, 0, 0.5, 1  # Warna teks lebih gelap
-
-        MDRaisedButton:
-            text: 'Kelas 1'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(1)
-
-        MDRaisedButton:
-            text: 'Kelas 2'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(2)
-
-        MDRaisedButton:
-            text: 'Kelas 3'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(3)
-
-<GameScreen>:
-    name: 'game'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-
-        MDLabel:
-            id: question
-            text: ''
-            halign: 'center'
-            font_style: 'H4'
-            color: 0, 0.4, 0.2, 1
-
-        GridLayout:
-            id: images_box
-            cols: 10
-            size_hint_y: None
-            height: self.minimum_height
-            spacing: 10
-            pos_hint: {"center_x": 0.5}
-
-        MDTextField:
-            id: answer
-            hint_text: 'Masukkan jawaban'
-            mode: 'rectangle'
-            halign: 'center'
-
-        MDRaisedButton:
-            text: 'Submit'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.check_answer()
-
-        MDLabel:
-            id: feedback
-            text: ''
-            halign: 'center'
-            font_style: 'Subtitle1'
-            theme_text_color: 'Secondary'
-
-<ResultScreen>:
-    name: 'result'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-
-        MDLabel:
-            id: result_label
-            text: ''
-            halign: 'center'
-            font_style: 'H4'
-
-        MDRaisedButton:
-            text: 'Main lagi'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.restart_game()
-'''
-
-# Tambahkan kelas MainScreen
 class MainScreen(Screen):
     pass
 
@@ -184,10 +28,11 @@ class ResultScreen(Screen):
 
 class MathGameApp(MDApp):
     def build(self):
-        self.sm = Builder.load_string(KV)
+        self.sm = Builder.load_file('math.kv')
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
         if self.sound:  # Jika file musik berhasil dimuat
             self.sound.loop = True  # Set agar musik diputar berulang
+            self.sound.volume = 0.1
             self.sound.play()  # Putar musik
         
         # Panggil animate_welcome_label setelah screen dimuat
