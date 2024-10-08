@@ -14,162 +14,6 @@ from kivy.animation import Animation
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
 
-KV = '''
-ScreenManager:
-    MainScreen:
-    MenuScreen:
-    GameScreen:
-    ResultScreen:
-
-<MainScreen>:
-    name: 'main'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            # Gambar latar belakang
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 40
-        spacing: 40
-
-        Image:
-            source: 'images/logo.png'
-            size_hint: (None, None)
-            size: 200, 200
-            pos_hint: {"center_x": 0.5}
-
-        MDLabel:
-            id: welcome_label
-            text: 'Selamat Datang!'
-            halign: 'center'
-            font_style: 'H4'
-            font_name: 'fonts/Roboto-Medium.ttf'
-            theme_text_color: 'Custom'
-            text_color: 0, 0, 0.5, 1
-
-        MDRaisedButton:
-            text: 'Mulai Permainan'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.sm.current = 'menu'
-
-<MenuScreen>:
-    name: 'menu'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-
-        MDLabel:
-            text: 'Pilih Level Kelas'
-            halign: 'center'
-            font_style: 'H4'
-            font_name: 'fonts/Roboto-Medium.ttf'
-            color: 0, 0, 0.5, 1  # Warna teks lebih gelap
-
-        MDRaisedButton:
-            text: 'Kelas 1'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(1)
-
-        MDRaisedButton:
-            text: 'Kelas 2'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(2)
-
-        MDRaisedButton:
-            text: 'Kelas 3'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(3)
-
-<GameScreen>:
-    name: 'game'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-
-        MDLabel:
-            id: question
-            text: ''
-            halign: 'center'
-            font_style: 'H4'
-            color: 0, 0.4, 0.2, 1
-
-        GridLayout:
-            id: images_box
-            cols: 10
-            size_hint_y: None
-            height: self.minimum_height
-            spacing: 10
-            pos_hint: {"center_x": 0.5}
-
-        MDTextField:
-            id: answer
-            hint_text: 'Masukkan jawaban'
-            mode: 'rectangle'
-            halign: 'center'
-
-        MDRaisedButton:
-            text: 'Submit'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.check_answer()
-
-        MDLabel:
-            id: feedback
-            text: ''
-            halign: 'center'
-            font_style: 'Subtitle1'
-            theme_text_color: 'Secondary'
-
-<ResultScreen>:
-    name: 'result'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-
-        MDLabel:
-            id: result_label
-            text: ''
-            halign: 'center'
-            font_style: 'H4'
-
-        MDRaisedButton:
-            text: 'Main lagi'
-            pos_hint: {'center_x': 0.5}
-            on_release: app.restart_game()
-'''
-
-# Tambahkan kelas MainScreen
 class MainScreen(Screen):
     pass
 
@@ -184,10 +28,11 @@ class ResultScreen(Screen):
 
 class MathGameApp(MDApp):
     def build(self):
-        self.sm = Builder.load_string(KV)
+        self.sm = Builder.load_file('math.kv')
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
         if self.sound:  # Jika file musik berhasil dimuat
             self.sound.loop = True  # Set agar musik diputar berulang
+            self.sound.volume = 0.1
             self.sound.play()  # Putar musik
         
         # Panggil animate_welcome_label setelah screen dimuat
@@ -251,9 +96,9 @@ class MathGameApp(MDApp):
 
     def display_images(self):
         images_box = self.sm.get_screen('game').ids.images_box
-        images_box.clear_widgets()  # Bersihkan gambar yang lama
+        images_box.clear_widgets()  # Clear previous images
 
-        # Menentukan gambar yang akan digunakan berdasarkan operasi
+        # Determine which image to use based on the operation
         image_choice = choice(image_list)
 
         total_images = 0
@@ -264,16 +109,45 @@ class MathGameApp(MDApp):
         elif self.operation == '*':
             total_images = self.num1 * self.num2
         elif self.operation == '/':
-            total_images = self.num1
+            total_images = self.num1  # Total images to show for division
+            group_size = self.num2  # Number of images in each group
 
-        # Menampilkan gambar sesuai total
-        for _ in range(total_images):
-            img = Image(source=image_choice)
-            img.size_hint = (None, None)
-            img.size = (50, 50)
-            images_box.add_widget(img)
+        # Display images according to the total
+        if self.operation == '/':
+            # Display images in groups for division
+            for group in range(group_size):
+                group_layout = MDBoxLayout(orientation='horizontal', spacing=1)  # Add spacing between groups
 
-        images_box.height = ((total_images // 5) + 1) * 60
+                for _ in range(self.num1 // self.num2):  # Each group should have a portion of images
+                    img = Image(source=image_choice)
+                    img.size_hint = (None, None)
+                    img.size = (50, 50)
+
+                    # Make images transparent if the operation is subtraction
+                    if self.operation == '-':
+                        img.opacity = 0.5  # Set opacity to 50% for transparency
+
+                    group_layout.add_widget(img)
+
+                images_box.add_widget(group_layout)  # Add the group of images to the main layout
+        else:
+            # For other operations
+            for i in range(total_images):
+                img = Image(source=image_choice)
+                img.size_hint = (None, None)
+                img.size = (50, 50)
+
+                # Make images transparent if the operation is subtraction
+                if self.operation == '-':
+                    img.opacity = 0.5  # Set opacity to 50% for transparency
+
+                images_box.add_widget(img)
+
+        # Adjust the height of the images box based on the number of groups
+        if self.operation == '/':
+            images_box.height = (group_size * 60)  # Adjust height based on the number of groups
+        else:
+            images_box.height = ((total_images // 5) + 1) * 60
 
     def check_answer(self):
         user_answer = self.sm.get_screen('game').ids.answer.text
