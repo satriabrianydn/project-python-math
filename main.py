@@ -6,6 +6,11 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.clock import Clock
 from random import randint, choice
+from kivy.uix.image import Image
+from kivy.uix.gridlayout import GridLayout
+
+# Daftar gambar
+image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
 
 KV = '''
 ScreenManager:
@@ -15,6 +20,12 @@ ScreenManager:
 
 <MenuScreen>:
     name: 'menu'
+    canvas.before:
+        Color:
+            rgba: 0.8, 0.9, 1, 1  # Latar biru cerah
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
     MDBoxLayout:
         orientation: 'vertical'
@@ -25,6 +36,7 @@ ScreenManager:
             text: 'Pilih Level Kelas'
             halign: 'center'
             font_style: 'H4'
+            color: 0, 0, 0.5, 1  # Warna teks lebih gelap
 
         MDRaisedButton:
             text: 'Kelas 1'
@@ -43,40 +55,43 @@ ScreenManager:
 
 <GameScreen>:
     name: 'game'
+    canvas.before:
+        Color:
+            rgba: 0.9, 1, 0.9, 1  # Latar hijau muda
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
     MDBoxLayout:
         orientation: 'vertical'
         padding: 20
         spacing: 20
 
-        MDBoxLayout:
-            orientation: 'horizontal'
+        MDLabel:
+            id: question
+            text: ''
+            halign: 'center'
+            font_style: 'H4'
+            color: 0, 0.4, 0.2, 1
+
+        GridLayout:
+            id: images_box
+            cols: 10
             size_hint_y: None
-            height: "48dp"
-            padding: [0, 10, 0, 0]
+            height: self.minimum_height
             spacing: 10
+            pos_hint: {"center_x": 0.5}
 
-        MDBoxLayout:
-            orientation: 'vertical'
-            padding: [0, 10, 0, 0]
-            spacing: 20
+        MDTextField:
+            id: answer
+            hint_text: 'Masukkan jawaban'
+            mode: 'rectangle'
+            halign: 'center'
 
-            MDLabel:
-                id: question
-                text: ''
-                halign: 'center'
-                font_style: 'H4'
-
-            MDTextField:
-                id: answer
-                hint_text: 'Masukkan jawaban'
-                mode: 'rectangle'
-                halign: 'center'
-
-            MDRaisedButton:
-                text: 'Submit'
-                pos_hint: {'center_x': 0.5}
-                on_release: app.check_answer()
+        MDRaisedButton:
+            text: 'Submit'
+            pos_hint: {'center_x': 0.5}
+            on_release: app.check_answer()
 
         MDLabel:
             id: feedback
@@ -87,6 +102,12 @@ ScreenManager:
 
 <ResultScreen>:
     name: 'result'
+    canvas.before:
+        Color:
+            rgba: 1, 0.9, 0.8, 1  # Latar merah muda
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
     MDBoxLayout:
         orientation: 'vertical'
@@ -98,13 +119,6 @@ ScreenManager:
             text: ''
             halign: 'center'
             font_style: 'H4'
-
-        MDLabel:
-            id: feedback_label
-            text: ''
-            halign: 'center'
-            font_style: 'Subtitle1'
-            theme_text_color: 'Secondary'
 
         MDRaisedButton:
             text: 'Main lagi'
@@ -130,27 +144,28 @@ class MathGameApp(MDApp):
         self.level = level
         self.score = 0
         self.current_question = 0
-        self.total_questions = 5
+        self.total_questions = 10
         self.sm.current = 'game'
         self.generate_question()
 
     def generate_question(self):
         if self.level == 1:
-            operations = ['+', '-']
-            self.operation = choice(operations)
-            self.num1 = randint(1, 10)
-            self.num2 = randint(1, 10)
+            self.num1 = randint(1, 5)  # Angka untuk Kelas 1
+            self.num2 = randint(1, 5)
+            self.operation = choice(['+', '-'])
         elif self.level == 2:
-            self.operation = '*'
             self.num1 = randint(1, 10)
-            self.num2 = randint(1, 10)
+            self.num2 = randint(1, 5)  # Batas pengurangan lebih kecil
+            self.operation = '*'
         elif self.level == 3:
-            self.operation = '/'
-            self.num1 = randint(10, 50)
             self.num2 = randint(1, 10)
-            while self.num1 % self.num2 != 0:
-                self.num1 = randint(10, 50)
-                self.num2 = randint(1, 10)
+            self.num1 = self.num2 * randint(1, 5)  # Pastikan hasil tetap dalam batas yang lebih besar
+            self.operation = '/'
+
+        # Pastikan tidak mengurangi lebih dari yang ada
+        if self.operation == '-':
+            if self.num1 < self.num2:
+                self.num1, self.num2 = self.num2, self.num1  # Menukar agar num1 selalu lebih besar
 
         if self.operation == '/':
             self.answer = self.num1 / self.num2
@@ -160,6 +175,40 @@ class MathGameApp(MDApp):
         question_text = f"{self.num1} {self.operation} {self.num2} = ?"
         self.sm.get_screen('game').ids.question.text = question_text
         self.sm.get_screen('game').ids.feedback.text = ''
+
+        # Menampilkan gambar sesuai angka
+        self.display_images()
+
+    def display_images(self):
+        images_box = self.sm.get_screen('game').ids.images_box
+        images_box.clear_widgets()  # Bersihkan gambar yang lama
+
+        # Menentukan gambar yang akan digunakan berdasarkan operasi
+        if self.operation in ['+', '-']:
+            image_choice = choice(image_list)  # Pilih gambar untuk penjumlahan/pengurangan
+        else:
+            image_choice = choice(image_list)  # Pilih gambar untuk perkalian/pembagian
+
+        # Menampilkan gambar sesuai operasi
+        total_images = 0
+        if self.operation == '+':
+            total_images = self.num1 + self.num2
+        elif self.operation == '-':
+            total_images = self.num1
+        elif self.operation == '*':
+            total_images = self.num1 * self.num2
+        elif self.operation == '/':
+            total_images = self.num1
+
+        # Menampilkan gambar sesuai total
+        for _ in range(total_images):
+            img = Image(source=image_choice)  # Gunakan gambar yang sama
+            img.size_hint = (None, None)
+            img.size = (50, 50)  # Atur ukuran gambar sesuai kebutuhan
+            images_box.add_widget(img)
+
+        # Update height of the GridLayout to accommodate all images
+        images_box.height = ((total_images // 5) + 1) * 60  # Update height if total_images exceeds column count
 
     def check_answer(self):
         user_answer = self.sm.get_screen('game').ids.answer.text
@@ -187,7 +236,6 @@ class MathGameApp(MDApp):
             feedback_message = "Jawaban Tidak Valid!"
 
         feedback_label.text = feedback_message
-
         
         Clock.schedule_once(self.show_result, 1)
 
