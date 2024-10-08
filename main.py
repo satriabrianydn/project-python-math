@@ -8,6 +8,7 @@ from kivy.clock import Clock
 from random import randint, choice
 from kivy.uix.image import Image
 from kivy.uix.gridlayout import GridLayout
+from kivy.core.audio import SoundLoader  # Import SoundLoader untuk memuat audio
 
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
@@ -23,8 +24,10 @@ ScreenManager:
     name: 'main'
     canvas.before:
         Color:
-            rgba: 0.8, 0.9, 1, 1  # Latar biru cerah
+            rgba: [1, 1, 1, 0.7]
         Rectangle:
+            # Gambar latar belakang
+            source: 'images/beach_background.png'
             pos: self.pos
             size: self.size
 
@@ -34,16 +37,18 @@ ScreenManager:
         spacing: 40
 
         Image:
-            source: 'images/logo.png'  # Ganti dengan path logo Anda
+            source: 'images/logo.png'
             size_hint: (None, None)
             size: 200, 200
             pos_hint: {"center_x": 0.5}
 
         MDLabel:
-            text: 'Selamat Datang di Game Matematika'
+            text: 'Selamat Datang!'
             halign: 'center'
             font_style: 'H4'
-            theme_text_color: 'Primary'
+            font_name: 'fonts/Roboto-Medium.ttf'
+            theme_text_color: 'Custom'
+            text_color: 0, 0, 0.5, 1
 
         MDRaisedButton:
             text: 'Mulai Permainan'
@@ -54,8 +59,9 @@ ScreenManager:
     name: 'menu'
     canvas.before:
         Color:
-            rgba: 0.8, 0.9, 1, 1  # Latar biru cerah
+            rgba: [1, 1, 1, 0.7]
         Rectangle:
+            source: 'images/beach_background.png'
             pos: self.pos
             size: self.size
 
@@ -68,6 +74,7 @@ ScreenManager:
             text: 'Pilih Level Kelas'
             halign: 'center'
             font_style: 'H4'
+            font_name: 'fonts/Roboto-Medium.ttf'
             color: 0, 0, 0.5, 1  # Warna teks lebih gelap
 
         MDRaisedButton:
@@ -89,8 +96,9 @@ ScreenManager:
     name: 'game'
     canvas.before:
         Color:
-            rgba: 0.9, 1, 0.9, 1  # Latar hijau muda
+            rgba: [1, 1, 1, 0.7]
         Rectangle:
+            source: 'images/beach_background.png'
             pos: self.pos
             size: self.size
 
@@ -136,8 +144,9 @@ ScreenManager:
     name: 'result'
     canvas.before:
         Color:
-            rgba: 1, 0.9, 0.8, 1  # Latar merah muda
+            rgba: [1, 1, 1, 0.7]
         Rectangle:
+            source: 'images/beach_background.png'
             pos: self.pos
             size: self.size
 
@@ -174,6 +183,10 @@ class ResultScreen(Screen):
 class MathGameApp(MDApp):
     def build(self):
         self.sm = Builder.load_string(KV)
+        self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
+        if self.sound:  # Jika file musik berhasil dimuat
+            self.sound.loop = True  # Set agar musik diputar berulang
+            self.sound.play()  # Putar musik
         return self.sm
 
     def start_game(self, level):
