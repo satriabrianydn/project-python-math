@@ -252,6 +252,9 @@ class MathGameApp(MDApp):
             img.size = (50, 50)
             images_box.add_widget(img)
 
+        if self.operation == '-':
+            img.opacity = 0.5
+
         images_box.height = ((total_images // 5) + 1) * 60
 
     def check_answer(self):
