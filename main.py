@@ -14,9 +14,41 @@ image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
 
 KV = '''
 ScreenManager:
+    MainScreen:
     MenuScreen:
     GameScreen:
     ResultScreen:
+
+<MainScreen>:
+    name: 'main'
+    canvas.before:
+        Color:
+            rgba: 0.8, 0.9, 1, 1  # Latar biru cerah
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 40
+        spacing: 40
+
+        Image:
+            source: 'images/logo.png'  # Ganti dengan path logo Anda
+            size_hint: (None, None)
+            size: 200, 200
+            pos_hint: {"center_x": 0.5}
+
+        MDLabel:
+            text: 'Selamat Datang di Game Matematika'
+            halign: 'center'
+            font_style: 'H4'
+            theme_text_color: 'Primary'
+
+        MDRaisedButton:
+            text: 'Mulai Permainan'
+            pos_hint: {'center_x': 0.5}
+            on_release: app.sm.current = 'menu'
 
 <MenuScreen>:
     name: 'menu'
@@ -126,6 +158,10 @@ ScreenManager:
             on_release: app.restart_game()
 '''
 
+# Tambahkan kelas MainScreen
+class MainScreen(Screen):
+    pass
+
 class MenuScreen(Screen):
     pass
 
@@ -184,12 +220,8 @@ class MathGameApp(MDApp):
         images_box.clear_widgets()  # Bersihkan gambar yang lama
 
         # Menentukan gambar yang akan digunakan berdasarkan operasi
-        if self.operation in ['+', '-']:
-            image_choice = choice(image_list)  # Pilih gambar untuk penjumlahan/pengurangan
-        else:
-            image_choice = choice(image_list)  # Pilih gambar untuk perkalian/pembagian
+        image_choice = choice(image_list)
 
-        # Menampilkan gambar sesuai operasi
         total_images = 0
         if self.operation == '+':
             total_images = self.num1 + self.num2
@@ -202,13 +234,12 @@ class MathGameApp(MDApp):
 
         # Menampilkan gambar sesuai total
         for _ in range(total_images):
-            img = Image(source=image_choice)  # Gunakan gambar yang sama
+            img = Image(source=image_choice)
             img.size_hint = (None, None)
-            img.size = (50, 50)  # Atur ukuran gambar sesuai kebutuhan
+            img.size = (50, 50)
             images_box.add_widget(img)
 
-        # Update height of the GridLayout to accommodate all images
-        images_box.height = ((total_images // 5) + 1) * 60  # Update height if total_images exceeds column count
+        images_box.height = ((total_images // 5) + 1) * 60
 
     def check_answer(self):
         user_answer = self.sm.get_screen('game').ids.answer.text
@@ -231,24 +262,20 @@ class MathGameApp(MDApp):
                 feedback_message = "Jawaban Benar!"
             else:
                 feedback_message = "Jawaban Salah!"
-
         except ValueError:
             feedback_message = "Jawaban Tidak Valid!"
 
         feedback_label.text = feedback_message
-        
         Clock.schedule_once(self.show_result, 1)
 
     def show_result(self, *args):
         self.current_question += 1
-
         if self.current_question < self.total_questions:
             self.sm.get_screen('game').ids.answer.text = ''
             self.generate_question()
         else:
             result_text = f"Kamu menjawab {self.score} dari {self.total_questions} soal dengan benar!"
-            result_screen = self.sm.get_screen('result')
-            result_screen.ids.result_label.text = result_text
+            self.sm.get_screen('result').ids.result_label.text = result_text
             self.sm.current = 'result'
 
     def restart_game(self):
