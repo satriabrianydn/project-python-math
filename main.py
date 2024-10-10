@@ -57,7 +57,7 @@ class MathGameApp(MDApp):
             self.sound.volume = 0.1
             self.sound.play()  # Putar musik
         
-        # # Panggil animate_welcome_label setelah screen dimuat
+        # Panggil animate_welcome_label setelah screen dimuat
         # Clock.schedule_once(self.animate_welcome_label, 1)
         # Animasi Tombol
         Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('main').ids.mulai_button), 0.5)
