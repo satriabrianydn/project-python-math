@@ -18,6 +18,9 @@ image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
 class ImageButton(ButtonBehavior, Image):
     pass
 
+class LoadingScreen(Screen):
+    pass
+
 class MainScreen(Screen):
     pass
 
@@ -32,6 +35,21 @@ class ResultScreen(Screen):
 
 class MathGameApp(MDApp):
     def build(self):
+        self.sm = ScreenManager()
+        
+        # Tambahkan loading screen dan main screen ke ScreenManager
+        self.sm.add_widget(LoadingScreen(name='loading'))
+        self.sm.add_widget(MainScreen(name='main'))
+        self.sm.add_widget(MenuScreen(name='menu'))
+        self.sm.add_widget(GameScreen(name='game'))
+        self.sm.add_widget(ResultScreen(name='result'))
+
+        # Set layar awal ke loading screen
+        self.sm.current = 'loading'
+
+        # Pindahkan ke MainScreen setelah beberapa detik (misalnya 3 detik)
+        Clock.schedule_once(self.switch_to_main, 3)
+        
         self.sm = Builder.load_file('math.kv')
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
         if self.sound:  # Jika file musik berhasil dimuat
@@ -39,10 +57,16 @@ class MathGameApp(MDApp):
             self.sound.volume = 0.1
             self.sound.play()  # Putar musik
         
-        # Panggil animate_welcome_label setelah screen dimuat
-        Clock.schedule_once(self.animate_welcome_label, 1)
+        # # Panggil animate_welcome_label setelah screen dimuat
+        # Clock.schedule_once(self.animate_welcome_label, 1)
+        # Animasi Tombol
+        Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('main').ids.mulai_button), 0.5)
 
         return self.sm
+    
+    def switch_to_main(self, *args):
+        # Pindahkan layar dari loading screen ke main screen
+        self.sm.current = 'main'
     
     def animate_welcome_label(self, *args):
         # Ambil label dari MainScreen menggunakan ID yang sudah ditambahkan
@@ -57,13 +81,26 @@ class MathGameApp(MDApp):
         loop_anim += Animation(y=100, duration=2)  # Gerakan turun
         loop_anim.repeat = True  # Loop animasi naik-turun
         loop_anim.start(welcome_label)
+        
+    def animate_button_blink(self, button):
+        # Animasi zoom out (perkecil tombol)
+        anim = Animation(size=(230, 90), duration=0.5)  
+        
+        # Animasi zoom in (perbesar tombol)
+        anim += Animation(size=(270, 110), duration=0.5)  
+        
+        # Ulangi animasi terus menerus
+        anim.repeat = True
+        
+        # Mulai animasi
+        anim.start(button)
 
 
     def start_game(self, level):
         self.level = level
         self.score = 0
         self.current_question = 0
-        self.total_questions = 10
+        self.total_questions = 2
         self.sm.current = 'game'
         self.generate_question()
 
@@ -188,6 +225,9 @@ class MathGameApp(MDApp):
             result_text = f"Kamu menjawab {self.score} dari {self.total_questions} soal dengan benar!"
             self.sm.get_screen('result').ids.result_label.text = result_text
             self.sm.current = 'result'
+            
+            # Animasi Tombol
+            Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 0.5)
 
         # Periksa apakah seluruh soal dijawab benar
         congrats_image = self.sm.get_screen('result').ids.congrats_image

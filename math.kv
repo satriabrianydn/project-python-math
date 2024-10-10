@@ -1,8 +1,37 @@
 ScreenManager:
+    LoadingScreen:
     MainScreen:
     MenuScreen:
     GameScreen:
     ResultScreen:
+
+<LoadingScreen>:
+    name: 'loading'
+    canvas.before:
+        Color:
+            rgba: [1, 1, 1, 0.7]
+        Rectangle:
+            source: 'images/beach_background.png'
+            pos: self.pos
+            size: self.size
+    FloatLayout:
+        orientation: 'vertical'
+        spacing: 10
+        padding: 20
+        MDSpinner:
+            size_hint: None, None
+            size: dp(60), dp(60)
+            active: True
+            pos_hint: {"center_x": 0.5, "center_y": 0.4}
+        MDLabel:
+            text: "Loading..."
+            halign: "center"
+            font_style: "H5"
+            font_name: 'fonts/ObelixPro-cyr.ttf'
+            theme_text_color: 'Custom'
+            text_color: 0, 0, 0.5, 1
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "center_y": 0.6}
 
 <MainScreen>:
     name: 'main'
@@ -35,6 +64,7 @@ ScreenManager:
             text_color: 0, 0, 0.5, 1
 
         ImageButton:
+            id: mulai_button
             source: 'assets/button_play.png'
             size_hint: (None, None)
             size: 250, 100
@@ -179,6 +209,7 @@ ScreenManager:
             disabled: True
 
         ImageButton:
+            id: kembali_button
             source: 'assets/button_restart.png'
             size_hint: (None, None)
             size: 250, 100
