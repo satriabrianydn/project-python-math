@@ -63,18 +63,24 @@ ScreenManager:
             font_name: 'fonts/ObelixPro-cyr.ttf'
             color: 0, 0, 0.5, 1
 
-        MDRaisedButton:
-            text: 'Kelas 1'
+        ImageButton:
+            source: 'assets/button_kelas1.png'
+            size_hint: (None, None)
+            size: 250, 100
             pos_hint: {'center_x': 0.5}
             on_release: app.start_game(1)
 
-        MDRaisedButton:
-            text: 'Kelas 2'
+        ImageButton:
+            source: 'assets/button_kelas2.png'
+            size_hint: (None, None)
+            size: 250, 100
             pos_hint: {'center_x': 0.5}
             on_release: app.start_game(2)
 
-        MDRaisedButton:
-            text: 'Kelas 3'
+        ImageButton:
+            source: 'assets/button_kelas3.png'
+            size_hint: (None, None)
+            size: 250, 100
             pos_hint: {'center_x': 0.5}
             on_release: app.start_game(3)
 
@@ -114,10 +120,19 @@ ScreenManager:
             mode: 'rectangle'
             halign: 'center'
 
-        MDRaisedButton:
-            text: 'Submit'
+        ImageButton:
+            source: 'assets/button_submit.png'
+            size_hint: (None, None)
+            size: 250, 100
             pos_hint: {'center_x': 0.5}
             on_release: app.check_answer()
+
+        ImageButton:
+            source: 'assets/button_kembali.png'
+            size_hint: (None, None)
+            size: 250, 100
+            pos_hint: {'center_x': 0.5}
+            on_release: app.sm.current = 'menu'
 
         MDLabel:
             id: feedback
@@ -147,7 +162,9 @@ ScreenManager:
             halign: 'center'
             font_style: 'H4'
 
-        MDRaisedButton:
-            text: 'Main lagi'
+        ImageButton:
+            source: 'assets/button_restart.png'
+            size_hint: (None, None)
+            size: 250, 100
             pos_hint: {'center_x': 0.5}
             on_release: app.restart_game()
