@@ -63,7 +63,7 @@ class MathGameApp(MDApp):
         self.level = level
         self.score = 0
         self.current_question = 0
-        self.total_questions = 1
+        self.total_questions = 10
         self.sm.current = 'game'
         self.generate_question()
 
@@ -184,9 +184,10 @@ class MathGameApp(MDApp):
             self.sm.get_screen('game').ids.answer.text = ''
             self.generate_question()
         else:
+        # Perbaiki bagian ini dengan mendefinisikan result_text
             result_text = f"Kamu menjawab {self.score} dari {self.total_questions} soal dengan benar!"
-        self.sm.get_screen('result').ids.result_label.text = result_text
-        self.sm.current = 'result'
+            self.sm.get_screen('result').ids.result_label.text = result_text
+            self.sm.current = 'result'
 
         # Periksa apakah seluruh soal dijawab benar
         congrats_image = self.sm.get_screen('result').ids.congrats_image
@@ -200,6 +201,13 @@ class MathGameApp(MDApp):
             congrats_image.disabled = True  # Nonaktifkan gambar
 
     def restart_game(self):
+    # Reset skor dan jumlah soal
+        self.score = 0
+        self.current_question = 0
+        self.sm.get_screen('game').ids.answer.text = ''  # Reset input field
+        self.sm.get_screen('game').ids.feedback.text = ''  # Reset feedback text
+
+    # Pindah ke screen menu
         self.sm.current = 'menu'
 
 if __name__ == '__main__':
