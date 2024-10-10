@@ -12,7 +12,6 @@ from kivy.core.audio import SoundLoader
 from kivy.animation import Animation
 from kivy.uix.button import ButtonBehavior
 
-
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
 
@@ -101,58 +100,56 @@ class MathGameApp(MDApp):
 
     def display_images(self):
         images_box = self.sm.get_screen('game').ids.images_box
-        images_box.clear_widgets()  # Clear previous images
+        images_box.clear_widgets()  # Bersihkan gambar sebelumnya
 
-        # Determine which image to use based on the operation
+        # Pilih gambar acak dari daftar image_list
         image_choice = choice(image_list)
 
         total_images = 0
         if self.operation == '+':
             total_images = self.num1 + self.num2
         elif self.operation == '-':
-            total_images = self.num1
+            total_images = self.num1  # Menampilkan sebanyak num1 gambar
+            transparent_images = self.num2  # Jumlah gambar yang akan ditransparasikan (dikurangi)
         elif self.operation == '*':
             total_images = self.num1 * self.num2
         elif self.operation == '/':
-            total_images = self.num1  # Total images to show for division
-            group_size = self.num2  # Number of images in each group
+            total_images = self.num1  # Total gambar yang akan ditampilkan untuk pembagian
+            group_size = self.num2  # Jumlah gambar dalam setiap grup
 
-        # Display images according to the total
+        num_transparent = self.num2 if self.operation == '-' else 0
+        
+        # Tampilkan gambar sesuai operasi
         if self.operation == '/':
-            # Display images in groups for division
+            # Tampilkan gambar dalam grup untuk operasi pembagian
             for group in range(group_size):
-                group_layout = MDBoxLayout(orientation='horizontal', spacing=1)  # Add spacing between groups
+                group_layout = MDBoxLayout(orientation='horizontal', spacing=1)  # Tambahkan spasi antar grup
 
-                for _ in range(self.num1 // self.num2):  # Each group should have a portion of images
+                for _ in range(self.num1 // self.num2):  # Setiap grup akan memiliki sejumlah gambar
                     img = Image(source=image_choice)
                     img.size_hint = (None, None)
                     img.size = (50, 50)
-
-                    # Make images transparent if the operation is subtraction
-                    if self.operation == '-':
-                        img.opacity = 0.5  # Set opacity to 50% for transparency
-
                     group_layout.add_widget(img)
 
-                images_box.add_widget(group_layout)  # Add the group of images to the main layout
+                images_box.add_widget(group_layout)  # Tambahkan grup gambar ke layout utama
         else:
-            # For other operations
+            # Untuk operasi lain (penjumlahan, pengurangan, perkalian)
             for i in range(total_images):
                 img = Image(source=image_choice)
                 img.size_hint = (None, None)
                 img.size = (50, 50)
 
-                # Make images transparent if the operation is subtraction
-                if self.operation == '-':
-                    img.opacity = 0.5  # Set opacity to 50% for transparency
+                # Jika operasi pengurangan, buat beberapa gambar menjadi transparan
+                if self.operation == '-' and i >= (total_images - num_transparent):
+                    img.opacity = 0.5
 
                 images_box.add_widget(img)
 
-        # Adjust the height of the images box based on the number of groups
+        # Sesuaikan tinggi dari kotak gambar berdasarkan jumlah grup
         if self.operation == '/':
-            images_box.height = (group_size * 60)  # Adjust height based on the number of groups
+            images_box.height = (group_size * 60)  # Sesuaikan tinggi berdasarkan jumlah grup
         else:
-            images_box.height = ((total_images // 5) + 1) * 60
+            images_box.height = ((total_images // 5) + 1) * 60  # Tinggi berdasarkan jumlah total gambar
 
     def check_answer(self):
         user_answer = self.sm.get_screen('game').ids.answer.text
