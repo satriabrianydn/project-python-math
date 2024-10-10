@@ -10,7 +10,6 @@ ScreenManager:
         Color:
             rgba: [1, 1, 1, 0.7]
         Rectangle:
-            # Gambar latar belakang
             source: 'images/beach_background.png'
             pos: self.pos
             size: self.size
@@ -31,12 +30,14 @@ ScreenManager:
             text: 'Selamat Datang!'
             halign: 'center'
             font_style: 'H4'
-            font_name: 'fonts/Roboto-Medium.ttf'
+            font_name: 'fonts/ObelixPro-cyr.ttf'
             theme_text_color: 'Custom'
             text_color: 0, 0, 0.5, 1
 
-        MDRaisedButton:
-            text: 'Mulai Permainan'
+        ImageButton:
+            source: 'assets/button_play.png'
+            size_hint: (None, None)
+            size: 250, 100
             pos_hint: {'center_x': 0.5}
             on_release: app.sm.current = 'menu'
 
@@ -59,7 +60,7 @@ ScreenManager:
             text: 'Pilih Level Kelas'
             halign: 'center'
             font_style: 'H4'
-            font_name: 'fonts/Roboto-Medium.ttf'
+            font_name: 'fonts/ObelixPro-cyr.ttf'
             color: 0, 0, 0.5, 1
 
         MDRaisedButton:

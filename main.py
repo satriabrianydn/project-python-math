@@ -9,10 +9,15 @@ from random import randint, choice
 from kivy.uix.image import Image
 from kivy.uix.gridlayout import GridLayout
 from kivy.core.audio import SoundLoader
-from kivy.animation import Animation 
+from kivy.animation import Animation
+from kivy.uix.button import ButtonBehavior
+
 
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
+
+class ImageButton(ButtonBehavior, Image):
+    pass
 
 class MainScreen(Screen):
     pass
