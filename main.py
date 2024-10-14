@@ -54,7 +54,7 @@ class MathGameApp(MDApp):
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
         if self.sound:  # Jika file musik berhasil dimuat
             self.sound.loop = True  # Set agar musik diputar berulang
-            self.sound.volume = 0.1
+            self.sound.volume = 1
             self.sound.play()  # Putar musik
         
         # Panggil animate_welcome_label setelah screen dimuat
