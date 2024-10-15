@@ -100,7 +100,7 @@ class MathGameApp(MDApp):
         self.level = level
         self.score = 0
         self.current_question = 0
-        self.total_questions = 2
+        self.total_questions = 10
         self.sm.current = 'game'
         self.generate_question()
 
@@ -222,7 +222,7 @@ class MathGameApp(MDApp):
             self.generate_question()
         else:
         # Perbaiki bagian ini dengan mendefinisikan result_text
-            result_text = f"Kamu menjawab {self.score} dari {self.total_questions} soal dengan benar!"
+            result_text = f"KAMU MENJAWAB {self.score} DARI {self.total_questions} SOAL DENGAN BENAR"
             self.sm.get_screen('result').ids.result_label.text = result_text
             self.sm.current = 'result'
             

@@ -7,39 +7,26 @@ ScreenManager:
 
 <LoadingScreen>:
     name: 'loading'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 0.7]
-        Rectangle:
-            source: 'images/beach_background.png'
-            pos: self.pos
-            size: self.size
     FloatLayout:
         orientation: 'vertical'
         spacing: 10
         padding: 20
-        MDSpinner:
-            size_hint: None, None
-            size: dp(60), dp(60)
-            active: True
-            pos_hint: {"center_x": 0.5, "center_y": 0.4}
-        MDLabel:
-            text: "Loading..."
-            halign: "center"
-            font_style: "H5"
-            font_name: 'fonts/ObelixPro-cyr.ttf'
-            theme_text_color: 'Custom'
-            text_color: 0, 0, 0.5, 1
-            size: self.texture_size
-            pos_hint: {"center_x": 0.5, "center_y": 0.6}
+
+        Video:
+            source: 'assets/videos/loading.mp4'  # Ganti dengan path video Anda
+            state: 'play'
+            options: {'eos': 'loop'}  # Loop video saat selesai
+            allow_stretch: True
+            size_hint: (1, 1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
 <MainScreen>:
     name: 'main'
     canvas.before:
         Color:
-            rgba: [1, 1, 1, 0.7]
+            rgba: [1, 1, 1, 1]
         Rectangle:
-            source: 'images/beach_background.png'
+            source: 'images/background_main.jpg'
             pos: self.pos
             size: self.size
 
@@ -48,20 +35,14 @@ ScreenManager:
         padding: 40
         spacing: 40
 
-        Image:
-            source: 'images/logo.png'
-            size_hint: (None, None)
-            size: 200, 200
-            pos_hint: {"center_x": 0.5}
-
         MDLabel:
             id: welcome_label
-            text: 'Selamat Datang!'
+            text: ''
             halign: 'center'
             font_style: 'H4'
-            font_name: 'fonts/ObelixPro-cyr.ttf'
+            font_name: 'fonts/kid-games.ttf'
             theme_text_color: 'Custom'
-            text_color: 0, 0, 0.5, 1
+            text_color: 1, 1, 1, 1
 
         ImageButton:
             id: mulai_button
@@ -75,52 +56,57 @@ ScreenManager:
     name: 'menu'
     canvas.before:
         Color:
-            rgba: [1, 1, 1, 0.7]
+            rgba: [1, 1, 1, 1]
         Rectangle:
-            source: 'images/beach_background.png'
+            source: 'images/background_level.jpg'
             pos: self.pos
             size: self.size
 
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-
+    FloatLayout:
         MDLabel:
-            text: 'Pilih Level Kelas'
+            text: ''
             halign: 'center'
             font_style: 'H4'
-            font_name: 'fonts/ObelixPro-cyr.ttf'
-            color: 0, 0, 0.5, 1
-
-        ImageButton:
-            source: 'assets/button_kelas1.png'
+            font_name: 'fonts/kid-games.ttf'
+            color: 1, 1, 1, 1
             size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(1)
+            size: self.texture_size
+            text_size: self.width, None  # Memastikan teks ditampilkan secara horizontal
+            pos_hint: {'center_x': 0.5, 'center_y': 0.9}  # Posisi teks lebih tinggi agar ada jarak
 
-        ImageButton:
-            source: 'assets/button_kelas2.png'
+        BoxLayout:
+            orientation: 'horizontal'
             size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(2)
+            size: 800, 200
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            spacing: 20
 
-        ImageButton:
-            source: 'assets/button_kelas3.png'
-            size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.5}
-            on_release: app.start_game(3)
+            ImageButton:
+                source: 'assets/button_kelas1.png'
+                size_hint: (None, None)
+                size: 250, 100
+                on_release: app.start_game(1)
+
+            ImageButton:
+                source: 'assets/button_kelas2.png'
+                size_hint: (None, None)
+                size: 250, 100
+                on_release: app.start_game(2)
+
+            ImageButton:
+                source: 'assets/button_kelas3.png'
+                size_hint: (None, None)
+                size: 250, 100
+                on_release: app.start_game(3)
+
 
 <GameScreen>:
     name: 'game'
     canvas.before:
         Color:
-            rgba: [1, 1, 1, 0.7]  # Warna latar belakang
+            rgba: [1, 1, 1, 1]  # Warna latar belakang
         Rectangle:
-            source: 'images/beach_background.png'  # Background gambar
+            source: 'images/background.jpg'  # Background gambar
             pos: self.pos
             size: self.size
 
@@ -134,13 +120,13 @@ ScreenManager:
             text: ''
             halign: 'center'
             font_style: 'H4'
-            color: 0, 0.4, 0.2, 1  # Warna teks soal (hijau)
+            font_name: 'fonts/kid-games.ttf'
+            color: 1, 1, 1, 1  # Warna teks soal (hijau)
 
         GridLayout:
             id: images_box
             cols: 10  # Menentukan kolom untuk gambar
-            size_hint_y: None
-            height: self.minimum_height  # Sesuaikan tinggi dengan gambar
+            size: 250, 100
             spacing: 10  # Jarak antar gambar
             pos_hint: {"center_x": 0.5}
 
@@ -167,22 +153,22 @@ ScreenManager:
             size_hint: (None, None)
             size: 250, 100
             pos_hint: {'center_x': 0.5}
-            on_release: app.sm.current = 'menu'  # Kembali ke menu
+            on_release: app.sm.current = 'menu'
 
         MDLabel:
             id: feedback
             text: ''
             halign: 'center'
             font_style: 'Subtitle1'
-            theme_text_color: 'Secondary'  # Teks feedback (warna sekunder)
+            theme_text_color: 'Secondary'
 
 <ResultScreen>:
     name: 'result'
     canvas.before:
         Color:
-            rgba: [1, 1, 1, 0.7]
+            rgba: [1, 1, 1, 1]
         Rectangle:
-            source: 'images/beach_background.png'
+            source: 'images/background.jpg'
             pos: self.pos
             size: self.size
 
@@ -196,8 +182,8 @@ ScreenManager:
             text: ''
             halign: 'center'
             font_style: 'H4'
-            font_name: 'fonts/ObelixPro-cyr.ttf'
-            color: 0, 0, 0.5, 1
+            font_name: 'fonts/kid-games.ttf'
+            color: 1, 1, 1, 1
 
         ImageButton:
             id: congrats_image
