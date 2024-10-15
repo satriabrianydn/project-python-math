@@ -54,7 +54,7 @@ class MathGameApp(MDApp):
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
         if self.sound:  # Jika file musik berhasil dimuat
             self.sound.loop = True  # Set agar musik diputar berulang
-            self.sound.volume = 0.1
+            self.sound.volume = 1
             self.sound.play()  # Putar musik
         
         # Panggil animate_welcome_label setelah screen dimuat
@@ -222,7 +222,7 @@ class MathGameApp(MDApp):
             self.generate_question()
         else:
         # Perbaiki bagian ini dengan mendefinisikan result_text
-            result_text = f"Kamu menjawab {self.score} dari {self.total_questions} soal dengan benar!"
+            result_text = f"KAMU MENJAWAB {self.score} DARI {self.total_questions} SOAL DENGAN BENAR"
             self.sm.get_screen('result').ids.result_label.text = result_text
             self.sm.current = 'result'
             
