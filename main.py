@@ -164,7 +164,7 @@ class MathGameApp(MDApp):
 
                 for _ in range(self.num1 // self.num2):  # Setiap grup akan memiliki sejumlah gambar
                     img = Image(source=image_choice)
-                    img.size_hint = (None, None)
+                    img.size_hint = (2, 2)
                     img.size = (50, 50)
                     group_layout.add_widget(img)
 
@@ -173,7 +173,7 @@ class MathGameApp(MDApp):
             # Untuk operasi lain (penjumlahan, pengurangan, perkalian)
             for i in range(total_images):
                 img = Image(source=image_choice)
-                img.size_hint = (None, None)
+                img.size_hint = (2, 2)
                 img.size = (50, 50)
 
                 # Jika operasi pengurangan, buat beberapa gambar menjadi transparan
