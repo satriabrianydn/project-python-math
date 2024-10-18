@@ -104,9 +104,9 @@ ScreenManager:
     name: 'game'
     canvas.before:
         Color:
-            rgba: [1, 1, 1, 1]  # Warna latar belakang
+            rgba: [1, 1, 1, 1]  # Background color
         Rectangle:
-            source: 'images/background.jpg'  # Background gambar
+            source: 'images/background.jpg'  # Background image
             pos: self.pos
             size: self.size
 
@@ -121,22 +121,27 @@ ScreenManager:
             halign: 'center'
             font_style: 'H4'
             font_name: 'fonts/kid-games.ttf'
-            color: 1, 1, 1, 1  # Warna teks soal (hijau)
+            color: 1, 1, 1, 1  # Question text color
 
-        GridLayout:
+        # BoxLayout to center images
+        BoxLayout:
             id: images_box
-            cols: 10  # Menentukan kolom untuk gambar
-            size: 250, 100
-            spacing: 10  # Jarak antar gambar
-            pos_hint: {"center_x": 0.5}
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(100)  # Adjust height as needed
+            spacing: 10
+            halign: 'center'
+            pos_hint: {'center_x': 0.5}
+
+            # Dynamically filled with images in your Python code
 
         MDTextField:
             id: answer
             hint_text: 'Masukkan jawaban'
-            mode: 'rectangle'  # Bentuk input
+            mode: 'rectangle'  # Input shape
             halign: 'center'
-            input_filter: 'int'  # Hanya menerima input angka (integer)
-            multiline: False  # Mencegah input lebih dari satu baris
+            input_filter: 'int'  # Accepts only integer input
+            multiline: False  # Prevent multiple lines of input
             size_hint: (0.8, None)
             height: "40dp"
             pos_hint: {'center_x': 0.5}
@@ -146,7 +151,7 @@ ScreenManager:
             size_hint: (None, None)
             size: 250, 100
             pos_hint: {'center_x': 0.5}
-            on_release: app.check_answer()  # Panggil fungsi untuk memeriksa jawaban
+            on_release: app.check_answer()  # Call function to check answer
 
         ImageButton:
             source: 'assets/button_kembali.png'
@@ -161,6 +166,7 @@ ScreenManager:
             halign: 'center'
             font_style: 'Subtitle1'
             theme_text_color: 'Secondary'
+
 
 <ResultScreen>:
     name: 'result'
