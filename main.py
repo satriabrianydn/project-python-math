@@ -164,7 +164,7 @@ class MathGameApp(MDApp):
 
                 for _ in range(self.num1 // self.num2):  # Setiap grup akan memiliki sejumlah gambar
                     img = Image(source=image_choice)
-                    img.size_hint = (2, 2)
+                    img.size_hint = (1, 1)
                     img.size = (50, 50)
                     group_layout.add_widget(img)
 
@@ -173,7 +173,7 @@ class MathGameApp(MDApp):
             # Untuk operasi lain (penjumlahan, pengurangan, perkalian)
             for i in range(total_images):
                 img = Image(source=image_choice)
-                img.size_hint = (2, 2)
+                img.size_hint = (1, 1)
                 img.size = (50, 50)
 
                 # Jika operasi pengurangan, buat beberapa gambar menjadi transparan
@@ -185,14 +185,18 @@ class MathGameApp(MDApp):
         # Sesuaikan tinggi dari kotak gambar berdasarkan jumlah grup
         if self.operation == '/':
             images_box.height = (group_size * 60)  # Sesuaikan tinggi berdasarkan jumlah grup
+            images_box.size_hint = (1, 1)
+            img.size = (50, 50)
         else:
             images_box.height = ((total_images // 5) + 1) * 60  # Tinggi berdasarkan jumlah total gambar
+            images_box.size_hint = (1, 1)
+            img.size = (50, 50)
 
     def check_answer(self):
         user_answer = self.sm.get_screen('game').ids.answer.text
         feedback_label = self.sm.get_screen('game').ids.feedback
 
-        if user_answer.strip() == '':       
+        if user_answer.strip() == '':
             feedback_label.text = "Silakan masukkan jawaban!"
             return
 
