@@ -1,6 +1,7 @@
 ScreenManager:
     LoadingScreen:
     MainScreen:
+    SettingsScreen:
     MenuScreen:
     GameScreen:
     ResultScreen:
@@ -51,6 +52,58 @@ ScreenManager:
             size: 250, 100
             pos_hint: {'center_x': 0.5}
             on_release: app.sm.current = 'menu'
+
+        ImageButton:
+            source: 'assets/button_settings.png'
+            size_hint: (None, None)
+            size: 250, 100
+            pos_hint: {'center_x': 0.5}
+            on_release: app.sm.current = 'settings'
+
+<SettingsScreen>:
+    name: 'settings'
+    canvas.before:
+        Color:
+            rgba: [1, 1, 1, 1]
+        Rectangle:
+            source: 'images/background.jpg'
+            pos: self.pos
+            size: self.size
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+
+        MDLabel:
+            text: "PENGATURAN"
+            halign: 'center'
+            font_style: 'H5'
+            font_name: 'fonts/kid-games.ttf'
+            theme_text_color: 'Custom'
+            text_color: 1, 1, 1, 1
+
+        MDCheckbox:
+            id: audio_checkbox
+            active: True
+            on_active: app.on_audio_switch(self, self.active)
+        
+        MDLabel:
+            text: "MATIKAN AUDIO"
+            halign: 'center'
+            size_hint_y: None
+            font_name: 'fonts/kid-games.ttf'
+            theme_text_color: 'Custom'
+            text_color: 1, 1, 1, 1
+            height: self.texture_size[1]
+        
+        ImageButton:
+            id: kembali_button
+            source: 'assets/button_kembali.png'
+            size_hint: (None, None)
+            size: 250, 100
+            pos_hint: {'center_x': 0.5}
+            on_release: app.sm.current = 'main'
 
 <MenuScreen>:
     name: 'menu'
@@ -104,68 +157,80 @@ ScreenManager:
     name: 'game'
     canvas.before:
         Color:
-            rgba: [1, 1, 1, 1]  # Background color
+            rgba: [1, 1, 1, 1]  # Warna latar belakang
         Rectangle:
-            source: 'images/background.jpg'  # Background image
+            source: 'images/background.jpg'  # Gambar latar belakang
             pos: self.pos
             size: self.size
 
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
+    FloatLayout:
+        # Menggunakan FloatLayout untuk memungkinkan penempatan bebas
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: 20
+            spacing: 20
 
+            MDLabel:
+                id: question
+                text: ''
+                halign: 'center'
+                font_style: 'H4'
+                font_name: 'fonts/kid-games.ttf'
+                color: 1, 1, 1, 1  # Warna teks pertanyaan
+
+            # BoxLayout untuk menempatkan gambar di tengah
+            BoxLayout:
+                id: images_box
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(100)  # Sesuaikan tinggi sesuai kebutuhan
+                spacing: 10
+                halign: 'center'
+                pos_hint: {'center_x': 0.5}
+
+            MDTextField:
+                id: answer
+                hint_text: 'Masukkan jawaban'
+                mode: 'rectangle'  # Bentuk input
+                halign: 'center'
+                input_filter: 'int'  # Menerima hanya input angka
+                multiline: False  # Mencegah input multi-baris
+                size_hint: (0.8, None)
+                height: "40dp"
+                pos_hint: {'center_x': 0.5}
+
+            ImageButton:
+                source: 'assets/button_submit.png'
+                size_hint: (None, None)
+                size: 250, 100
+                pos_hint: {'center_x': 0.5}
+                on_release: app.check_answer()
+
+            ImageButton:
+                source: 'assets/button_kembali.png'
+                size_hint: (None, None)
+                size: 250, 100
+                pos_hint: {'center_x': 0.5}
+                on_release: app.sm.current = 'menu'
+
+            MDLabel:
+                id: feedback
+                text: ''
+                halign: 'center'
+                font_style: 'Subtitle1'
+                theme_text_color: 'Secondary'
+
+        # Menambahkan label score di pojok kanan atas
         MDLabel:
-            id: question
-            text: ''
-            halign: 'center'
-            font_style: 'H4'
+            id: score_label
+            text: "SCORE: 0"
+            halign: 'right'
+            font_style: 'H6'
             font_name: 'fonts/kid-games.ttf'
-            color: 1, 1, 1, 1  # Question text color
-
-        # BoxLayout to center images
-        BoxLayout:
-            id: images_box
-            orientation: 'horizontal'
+            color: 0, 0, 0, 1  # Warna teks score
             size_hint_y: None
-            height: dp(100)  # Adjust height as needed
-            spacing: 10
-            halign: 'center'
-            pos_hint: {'center_x': 0.5}
-
-            # Dynamically filled with images in your Python code
-
-        MDTextField:
-            id: answer
-            hint_text: 'Masukkan jawaban'
-            mode: 'rectangle'  # Input shape
-            halign: 'center'
-            input_filter: 'int'  # Accepts only integer input
-            multiline: False  # Prevent multiple lines of input
-            size_hint: (0.8, None)
-            height: "40dp"
-            pos_hint: {'center_x': 0.5}
-
-        ImageButton:
-            source: 'assets/button_submit.png'
-            size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.5}
-            on_release: app.check_answer()  # Call function to check answer
-
-        ImageButton:
-            source: 'assets/button_kembali.png'
-            size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.5}
-            on_release: app.sm.current = 'menu'
-
-        MDLabel:
-            id: feedback
-            text: ''
-            halign: 'center'
-            font_style: 'Subtitle1'
-            theme_text_color: 'Secondary'
+            height: '30dp'
+            pos_hint: {'right': 1, 'top': 1} 
 
 
 <ResultScreen>:
