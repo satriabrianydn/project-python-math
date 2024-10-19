@@ -4,6 +4,7 @@ from kivymd.app import MDApp
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivy.uix.checkbox import CheckBox
 from kivy.clock import Clock
 from random import randint, choice
 from kivy.uix.image import Image
@@ -24,6 +25,10 @@ class LoadingScreen(Screen):
 class MainScreen(Screen):
     pass
 
+class SettingsScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
 class MenuScreen(Screen):
     pass
 
@@ -40,6 +45,7 @@ class MathGameApp(MDApp):
         # Tambahkan loading screen dan main screen ke ScreenManager
         self.sm.add_widget(LoadingScreen(name='loading'))
         self.sm.add_widget(MainScreen(name='main'))
+        self.sm.add_widget(SettingsScreen(name='settings'))
         self.sm.add_widget(MenuScreen(name='menu'))
         self.sm.add_widget(GameScreen(name='game'))
         self.sm.add_widget(ResultScreen(name='result'))
@@ -48,7 +54,7 @@ class MathGameApp(MDApp):
         self.sm.current = 'loading'
 
         # Pindahkan ke MainScreen setelah beberapa detik (misalnya 3 detik)
-        Clock.schedule_once(self.switch_to_main, 3)
+        Clock.schedule_once(self.switch_to_main, 5)
         
         self.sm = Builder.load_file('math.kv')
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
@@ -63,6 +69,12 @@ class MathGameApp(MDApp):
         Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('main').ids.mulai_button), 0.5)
 
         return self.sm
+    
+    def on_audio_switch(self, checkbox, value):
+        if value:
+            self.sound.volume = 1  # Jika checkbox aktif, volume penuh
+        else:
+            self.sound.volume = 0
     
     def switch_to_main(self, *args):
         # Pindahkan layar dari loading screen ke main screen
@@ -195,6 +207,7 @@ class MathGameApp(MDApp):
     def check_answer(self):
         user_answer = self.sm.get_screen('game').ids.answer.text
         feedback_label = self.sm.get_screen('game').ids.feedback
+        score_label = self.sm.get_screen('game').ids.score_label
 
         if user_answer.strip() == '':
             feedback_label.text = "Silakan masukkan jawaban!"
@@ -209,13 +222,14 @@ class MathGameApp(MDApp):
                 correct = user_answer == self.answer
 
             if correct:
-                self.score += 1
+                self.score += 10
                 feedback_message = "Jawaban Benar!"
             else:
                 feedback_message = "Jawaban Salah!"
         except ValueError:
             feedback_message = "Jawaban Tidak Valid!"
 
+        score_label.text = f"Score: {self.score}"
         feedback_label.text = feedback_message
         Clock.schedule_once(self.show_result, 1)
 
