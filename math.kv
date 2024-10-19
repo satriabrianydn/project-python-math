@@ -164,7 +164,6 @@ ScreenManager:
             size: self.size
 
     FloatLayout:
-        # Menggunakan FloatLayout untuk memungkinkan penempatan bebas
         MDBoxLayout:
             orientation: 'vertical'
             padding: 20
@@ -188,16 +187,19 @@ ScreenManager:
                 halign: 'center'
                 pos_hint: {'center_x': 0.5}
 
-            MDTextField:
+            MDTextFieldRect:
                 id: answer
                 hint_text: 'Masukkan jawaban'
-                mode: 'rectangle'  # Bentuk input
+                mode: 'rectangle'
                 halign: 'center'
-                input_filter: 'int'  # Menerima hanya input angka
-                multiline: False  # Mencegah input multi-baris
+                input_filter: 'int'
+                multiline: False
                 size_hint: (0.8, None)
                 height: "40dp"
                 pos_hint: {'center_x': 0.5}
+                radius: [15, 15, 15, 15]
+                background_color: 1, 1, 1, 1
+                text_color: 0, 0, 0, 1
 
             ImageButton:
                 source: 'assets/button_submit.png'
@@ -220,7 +222,6 @@ ScreenManager:
                 font_style: 'Subtitle1'
                 theme_text_color: 'Secondary'
 
-        # Menambahkan label score di pojok kanan atas
         MDLabel:
             id: score_label
             text: "SCORE: 0"
