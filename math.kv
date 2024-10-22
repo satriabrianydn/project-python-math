@@ -78,25 +78,35 @@ ScreenManager:
         MDLabel:
             text: "PENGATURAN"
             halign: 'center'
-            font_style: 'H5'
+            font_style: 'H2'
             font_name: 'fonts/kid-games.ttf'
             theme_text_color: 'Custom'
             text_color: 1, 1, 1, 1
 
-        MDCheckbox:
-            id: audio_checkbox
-            active: True
-            on_active: app.on_audio_switch(self, self.active)
-        
-        MDLabel:
-            text: "MATIKAN AUDIO"
-            halign: 'center'
+        MDBoxLayout:
+            orientation: 'horizontal'
             size_hint_y: None
-            font_name: 'fonts/kid-games.ttf'
-            theme_text_color: 'Custom'
-            text_color: 1, 1, 1, 1
-            height: self.texture_size[1]
-        
+            height: dp(48)  # Tinggi untuk baris ini
+            padding: dp(10)  # Tambahkan padding dalam MDBoxLayout
+
+            MDLabel:
+                text: "MATIKAN AUDIO"
+                halign: 'left'  # Untuk menyelaraskan ke kiri
+                size_hint_x: 0.7  # Menentukan lebar label
+                theme_text_color: 'Custom'
+                text_color: 1, 1, 1, 1
+                font_name: 'fonts/kid-games.ttf'
+                valign: 'center'  # Vertikal center
+
+            MDCheckbox:
+                id: audio_checkbox
+                active: True
+                on_active: app.on_audio_switch(self, self.active)
+                size_hint_x: 0.3  # Menentukan lebar checkbox
+                color: [1, 1, 1, 1]
+                active_color: [1, 1, 1, 1]
+                disabled_color: [0.5, 0.5, 0.5, 1]
+
         ImageButton:
             id: kembali_button
             source: 'assets/button_kembali.png'
@@ -116,6 +126,13 @@ ScreenManager:
             size: self.size
 
     FloatLayout:
+        MDIconButton:
+            icon: 'arrow-left'
+            size_hint: (None, None)
+            size: dp(50), dp(50)  # Ukuran tombol panah
+            pos_hint: {'x': 10, 'top': self.height - 10}  # Posisi di pojok kiri atas
+            on_release: app.sm.current = 'main'
+
         MDLabel:
             text: ''
             halign: 'center'
@@ -151,7 +168,6 @@ ScreenManager:
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(3)
-
 
 <GameScreen>:
     name: 'game'
@@ -228,7 +244,7 @@ ScreenManager:
             halign: 'right'
             font_style: 'H6'
             font_name: 'fonts/kid-games.ttf'
-            color: 0, 0, 0, 1  # Warna teks score
+            color: 0, 0, 0, 1
             size_hint_y: None
             height: '30dp'
             pos_hint: {'right': 1, 'top': 1} 
