@@ -75,6 +75,14 @@ ScreenManager:
         padding: 20
         spacing: 20
 
+        ImageButton:
+            id: kembali_button
+            source: 'assets/button_kembali.png'
+            size_hint: (None, None)
+            size: 250, 100
+            pos_hint: {'center_x': 0.1, 'center_y': 0.9}
+            on_release: app.sm.current = 'main'
+            
         MDLabel:
             text: "PENGATURAN"
             halign: 'center'
@@ -85,18 +93,18 @@ ScreenManager:
 
         MDBoxLayout:
             orientation: 'horizontal'
-            size_hint_y: None
+            size_hint_y: 0.5
             height: dp(48)  # Tinggi untuk baris ini
             padding: dp(10)  # Tambahkan padding dalam MDBoxLayout
 
             MDLabel:
                 text: "MATIKAN AUDIO"
-                halign: 'left'  # Untuk menyelaraskan ke kiri
                 size_hint_x: 0.7  # Menentukan lebar label
                 theme_text_color: 'Custom'
                 text_color: 1, 1, 1, 1
                 font_name: 'fonts/kid-games.ttf'
-                valign: 'center'  # Vertikal center
+                halign: 'center'  # Vertikal center
+                
 
             MDCheckbox:
                 id: audio_checkbox
@@ -106,14 +114,6 @@ ScreenManager:
                 color: [1, 1, 1, 1]
                 active_color: [1, 1, 1, 1]
                 disabled_color: [0.5, 0.5, 0.5, 1]
-
-        ImageButton:
-            id: kembali_button
-            source: 'assets/button_kembali.png'
-            size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.5}
-            on_release: app.sm.current = 'main'
 
 <MenuScreen>:
     name: 'menu'
@@ -144,6 +144,14 @@ ScreenManager:
             text_size: self.width, None  # Memastikan teks ditampilkan secara horizontal
             pos_hint: {'center_x': 0.5, 'center_y': 0.9}  # Posisi teks lebih tinggi agar ada jarak
 
+        ImageButton:
+            id: kembali_button
+            source: 'assets/button_kembali.png'
+            size_hint: (None, None)
+            size: 250, 100
+            pos_hint: {'center_x': 0.1, 'center_y': 0.9}
+            on_release: app.sm.current = 'main'
+            
         BoxLayout:
             orientation: 'horizontal'
             size_hint: (None, None)

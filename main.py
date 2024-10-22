@@ -129,7 +129,7 @@ class MathGameApp(MDApp):
         self.level = level
         self.score = 0
         self.current_question = 0
-        self.total_questions = 2
+        self.total_questions = 10
         self.sm.current = 'game'
         self.generate_question()
 
