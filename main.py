@@ -42,9 +42,6 @@ class ResultScreen(Screen):
 class MathGameApp(MDApp):
     def build(self):
         self.sm = ScreenManager()
-        # self.max_health = 3  # Total hati
-        # self.current_health = self.max_health
-        # self.update_health_display()
         
         # Tambahkan loading screen dan main screen ke ScreenManager
         self.sm.add_widget(LoadingScreen(name='loading'))
@@ -132,14 +129,6 @@ class MathGameApp(MDApp):
         self.total_questions = 10
         self.sm.current = 'game'
         self.generate_question()
-
-    # def update_health_display(self):
-    #     health_box = self.sm.ids.health_box
-    #     health_box.clear_widgets()  # Hapus hati yang ada
-
-    #     for _ in range(self.current_health):
-    #         heart = Image(source='assets/heart.png', size_hint=(None, None), size=(40, 40))  # Gambar hati
-    #         health_box.add_widget(heart)
 
     def generate_question(self):
         if self.level == 1:

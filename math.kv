@@ -126,13 +126,6 @@ ScreenManager:
             size: self.size
 
     FloatLayout:
-        MDIconButton:
-            icon: 'arrow-left'
-            size_hint: (None, None)
-            size: dp(50), dp(50)  # Ukuran tombol panah
-            pos_hint: {'x': 10, 'top': self.height - 10}  # Posisi di pojok kiri atas
-            on_release: app.sm.current = 'main'
-
         MDLabel:
             text: ''
             halign: 'center'
