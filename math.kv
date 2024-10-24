@@ -69,13 +69,12 @@ ScreenManager:
         pos: self.parent.pos
 
     FloatLayout:
-
         ImageButton:
             id: kembali_button
             source: 'assets/buttons/button_back.png'
             size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.1, 'center_y': 0.9}
+            size: 80, 80
+            pos_hint: {'x': 0.02, 'top': 0.98}
             on_release: app.sm.current = 'main'
             
         MDBoxLayout:
@@ -114,23 +113,12 @@ ScreenManager:
         pos: self.parent.pos
 
     FloatLayout:
-        MDLabel:
-            text: ''
-            halign: 'center'
-            font_style: 'H4'
-            font_name: 'fonts/kid-games.ttf'
-            color: 1, 1, 1, 1
-            size_hint: (None, None)
-            size: self.texture_size
-            text_size: self.width, None  # Memastikan teks ditampilkan secara horizontal
-            pos_hint: {'center_x': 0.5, 'center_y': 0.9}  # Posisi teks lebih tinggi agar ada jarak
-
         ImageButton:
             id: kembali_button
             source: 'assets/buttons/button_back.png'
             size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.1, 'center_y': 0.9}
+            size: 80, 80
+            pos_hint: {'x': 0.02, 'top': 0.98}
             on_release: app.sm.current = 'main'
             
         BoxLayout:
