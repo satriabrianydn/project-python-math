@@ -10,9 +10,12 @@ from random import randint, choice
 from kivy.uix.image import Image
 from kivy.uix.gridlayout import GridLayout
 from kivy.core.audio import SoundLoader
+from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.uix.button import ButtonBehavior
 from kivymd.uix.dialog import MDDialog
+
+Window.size = (800, 480)
 
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
@@ -55,7 +58,7 @@ class MathGameApp(MDApp):
         self.sm.current = 'loading'
 
         # Pindahkan ke MainScreen setelah beberapa detik (misalnya 3 detik)
-        Clock.schedule_once(self.switch_to_main, 5)
+        Clock.schedule_once(self.switch_to_main, 15)
         
         self.sm = Builder.load_file('math.kv')
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
