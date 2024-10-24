@@ -12,6 +12,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.core.audio import SoundLoader
 from kivy.animation import Animation
 from kivy.uix.button import ButtonBehavior
+from kivymd.uix.dialog import MDDialog
 
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
@@ -107,6 +108,19 @@ class MathGameApp(MDApp):
         # Mulai animasi
         anim.start(button)
 
+    def show_popup(self, message):
+        dialog = MDDialog(
+            title="Info",
+            text=message,
+            size_hint=(0.8, None),  # Sesuaikan lebar dialog
+            buttons=[
+                MDRaisedButton(
+                    text="OK",
+                    on_release=lambda x: dialog.dismiss()  # Menutup dialog saat tombol OK ditekan
+                )
+            ]
+        )
+        dialog.open()
 
     def start_game(self, level):
         self.level = level
@@ -206,11 +220,10 @@ class MathGameApp(MDApp):
 
     def check_answer(self):
         user_answer = self.sm.get_screen('game').ids.answer.text
-        feedback_label = self.sm.get_screen('game').ids.feedback
         score_label = self.sm.get_screen('game').ids.score_label
 
         if user_answer.strip() == '':
-            feedback_label.text = "Silakan masukkan jawaban!"
+            self.show_popup("Silakan masukkan jawaban!")  # Tampilkan pop-up jika tidak ada jawaban
             return
 
         try:
@@ -222,15 +235,14 @@ class MathGameApp(MDApp):
                 correct = user_answer == self.answer
 
             if correct:
-                self.score += 10
-                feedback_message = "Jawaban Benar!"
+                self.score += 1
+                self.show_popup("Jawaban Benar!")  # Tampilkan pop-up untuk jawaban benar
             else:
-                feedback_message = "Jawaban Salah!"
+                self.show_popup("Jawaban Salah!")  # Tampilkan pop-up untuk jawaban salah
         except ValueError:
-            feedback_message = "Jawaban Tidak Valid!"
+            self.show_popup("Jawaban Tidak Valid!")  # Tampilkan pop-up untuk jawaban tidak valid
 
-        score_label.text = f"Score: {self.score}"
-        feedback_label.text = feedback_message
+        score_label.text = f"SCORE: {self.score}"
         Clock.schedule_once(self.show_result, 1)
 
     def show_result(self, *args):
