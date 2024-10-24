@@ -8,33 +8,30 @@ ScreenManager:
 
 <LoadingScreen>:
     name: 'loading'
-    FloatLayout:
-        orientation: 'vertical'
-        spacing: 10
-        padding: 20
-
-        Video:
-            source: 'assets/videos/loading.mp4'  # Ganti dengan path video Anda
-            state: 'play'
-            options: {'eos': 'loop'}  # Loop video saat selesai
-            allow_stretch: True
-            size_hint: (1, 1)
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    Image:
+        source: 'assets/gif/loading_2.gif'
+        anim_delay: 0.1
+        allow_stretch: True
+        keep_ratio: False
+        size_hint: None, None
+        size: self.parent.size
+        pos: self.parent.pos
 
 <MainScreen>:
     name: 'main'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 1]
-        Rectangle:
-            source: 'images/background_main.jpg'
-            pos: self.pos
-            size: self.size
+    Image:
+        source: 'assets/gif/main_screen.gif'
+        anim_delay: 0.1
+        allow_stretch: True
+        keep_ratio: False
+        size_hint: None, None
+        size: self.parent.size
+        pos: self.parent.pos
 
     MDBoxLayout:
         orientation: 'vertical'
-        padding: 40
-        spacing: 40
+        padding: [40, 20]
+        spacing: 20
 
         MDLabel:
             id: welcome_label
@@ -47,50 +44,45 @@ ScreenManager:
 
         ImageButton:
             id: mulai_button
-            source: 'assets/button_play.png'
+            source: 'assets/buttons/button_play.png'
             size_hint: (None, None)
-            size: 250, 100
+            size: 300, 120
             pos_hint: {'center_x': 0.5}
-            on_release: app.sm.current = 'menu'
+            on_release: 
+                app.sm.current = 'menu'
+                app.play_click_sound()
 
         ImageButton:
-            source: 'assets/button_settings.png'
+            source: 'assets/buttons/button_settings.png'
             size_hint: (None, None)
-            size: 250, 100
+            size: 300, 120
             pos_hint: {'center_x': 0.5}
-            on_release: app.sm.current = 'settings'
+            on_release: 
+                app.sm.current = 'settings'
+                app.play_click_sound()
 
 <SettingsScreen>:
     name: 'settings'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 1]
-        Rectangle:
-            source: 'images/background.jpg'
-            pos: self.pos
-            size: self.size
+    Image:
+        source: 'assets/gif/settings.gif'
+        anim_delay: 0.1
+        allow_stretch: True
+        keep_ratio: False
+        size_hint: None, None
+        size: self.parent.size
+        pos: self.parent.pos
 
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-
+    FloatLayout:
         ImageButton:
             id: kembali_button
-            source: 'assets/button_kembali.png'
+            source: 'assets/buttons/button_back.png'
             size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.1, 'center_y': 0.9}
-            on_release: app.sm.current = 'main'
+            size: 80, 80
+            pos_hint: {'x': 0.02, 'top': 0.98}
+            on_release: 
+                app.sm.current = 'main'
+                app.play_click_sound()
             
-        MDLabel:
-            text: "PENGATURAN"
-            halign: 'center'
-            font_style: 'H2'
-            font_name: 'fonts/kid-games.ttf'
-            theme_text_color: 'Custom'
-            text_color: 1, 1, 1, 1
-
         MDBoxLayout:
             orientation: 'horizontal'
             size_hint_y: 0.5
@@ -98,87 +90,79 @@ ScreenManager:
             padding: dp(10)  # Tambahkan padding dalam MDBoxLayout
 
             MDLabel:
-                text: "MATIKAN AUDIO"
-                size_hint_x: 0.7  # Menentukan lebar label
+                text: "NYALAKAN AUDIO"
+                size_hint_x: 0.5  # Menentukan lebar label
                 theme_text_color: 'Custom'
                 text_color: 1, 1, 1, 1
                 font_name: 'fonts/kid-games.ttf'
                 halign: 'center'  # Vertikal center
                 
-
             MDCheckbox:
                 id: audio_checkbox
                 active: True
-                on_active: app.on_audio_switch(self, self.active)
+                on_active: app.on_audio_switch(self, self.active)  # Memanggil fungsi saat aktif/tidak aktif
                 size_hint_x: 0.3  # Menentukan lebar checkbox
-                color: [1, 1, 1, 1]
-                active_color: [1, 1, 1, 1]
-                disabled_color: [0.5, 0.5, 0.5, 1]
+                color: [1, 1, 1, 1]  # Warna kotak centang
+                active_color: [1, 1, 1, 1]  # Warna tanda centang saat aktif
+                disabled_color: [0.5, 0.5, 0.5, 1]  # Warna saat checkbox nonaktif
 
 <MenuScreen>:
     name: 'menu'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 1]
-        Rectangle:
-            source: 'images/background_level.jpg'
-            pos: self.pos
-            size: self.size
+    Image:
+        source: 'assets/gif/class_choice.gif'
+        anim_delay: 0.1
+        allow_stretch: True
+        keep_ratio: False
+        size_hint: None, None
+        size: self.parent.size
+        pos: self.parent.pos
 
     FloatLayout:
-        MDLabel:
-            text: ''
-            halign: 'center'
-            font_style: 'H4'
-            font_name: 'fonts/kid-games.ttf'
-            color: 1, 1, 1, 1
-            size_hint: (None, None)
-            size: self.texture_size
-            text_size: self.width, None  # Memastikan teks ditampilkan secara horizontal
-            pos_hint: {'center_x': 0.5, 'center_y': 0.9}  # Posisi teks lebih tinggi agar ada jarak
-
         ImageButton:
             id: kembali_button
-            source: 'assets/button_kembali.png'
+            source: 'assets/buttons/button_back.png'
             size_hint: (None, None)
-            size: 250, 100
-            pos_hint: {'center_x': 0.1, 'center_y': 0.9}
-            on_release: app.sm.current = 'main'
+            size: 80, 80
+            pos_hint: {'x': 0.02, 'top': 0.98}
+            on_release: 
+                app.sm.current = 'main'
+                app.play_click_sound()
             
         BoxLayout:
             orientation: 'horizontal'
             size_hint: (None, None)
             size: 800, 200
-            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
-            spacing: 20
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            spacing: 40
 
             ImageButton:
-                source: 'assets/button_kelas1.png'
+                source: 'assets/buttons/button_kelas1.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(1)
 
             ImageButton:
-                source: 'assets/button_kelas2.png'
+                source: 'assets/buttons/button_kelas2.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(2)
 
             ImageButton:
-                source: 'assets/button_kelas3.png'
+                source: 'assets/buttons/button_kelas3.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(3)
 
 <GameScreen>:
     name: 'game'
-    canvas.before:
-        Color:
-            rgba: [1, 1, 1, 1]  # Warna latar belakang
-        Rectangle:
-            source: 'images/background.jpg'  # Gambar latar belakang
-            pos: self.pos
-            size: self.size
+    Image:
+        source: 'assets/gif/question_screen.gif'
+        anim_delay: 0.1
+        allow_stretch: True
+        keep_ratio: False
+        size_hint: None, None
+        size: self.parent.size
+        pos: self.parent.pos
 
     FloatLayout:
         MDBoxLayout:
@@ -201,8 +185,7 @@ ScreenManager:
                 size_hint_y: None
                 height: dp(100)  # Sesuaikan tinggi sesuai kebutuhan
                 spacing: 10
-                halign: 'center'
-                pos_hint: {'center_x': 0.5}
+                pos_hint: {'center_x': 0.5}  # Center the images horizontally
 
             MDTextFieldRect:
                 id: answer
@@ -218,19 +201,28 @@ ScreenManager:
                 background_color: 1, 1, 1, 1
                 text_color: 0, 0, 0, 1
 
-            ImageButton:
-                source: 'assets/button_submit.png'
+            # BoxLayout untuk menempatkan tombol di bawah input box dan di tengah
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: 20
                 size_hint: (None, None)
-                size: 250, 100
-                pos_hint: {'center_x': 0.5}
-                on_release: app.check_answer()
+                width: 500  # Total lebar dari kedua tombol
+                height: "100dp"
+                pos_hint: {'center_x': 0.5}  # Pastikan tombol berada di tengah
 
-            ImageButton:
-                source: 'assets/button_kembali.png'
-                size_hint: (None, None)
-                size: 250, 100
-                pos_hint: {'center_x': 0.5}
-                on_release: app.sm.current = 'menu'
+                ImageButton:
+                    source: 'assets/buttons/button_submit.png'
+                    size_hint: (None, None)
+                    size: 250, 100
+                    on_release: app.check_answer()
+
+                ImageButton:
+                    source: 'assets/buttons/button_kembali.png'
+                    size_hint: (None, None)
+                    size: 250, 100
+                    on_release: 
+                        app.sm.current = 'menu'
+                        app.play_click_sound()
 
             MDLabel:
                 id: feedback
@@ -248,7 +240,7 @@ ScreenManager:
             color: 0, 0, 0, 1
             size_hint_y: None
             height: '30dp'
-            pos_hint: {'right': 1, 'top': 1} 
+            pos_hint: {'right': 1, 'top': 1}
 
 
 <ResultScreen>:
@@ -285,7 +277,7 @@ ScreenManager:
 
         ImageButton:
             id: kembali_button
-            source: 'assets/button_restart.png'
+            source: 'assets/buttons/button_restart.png'
             size_hint: (None, None)
             size: 250, 100
             pos_hint: {'center_x': 0.5}

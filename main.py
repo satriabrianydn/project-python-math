@@ -10,9 +10,12 @@ from random import randint, choice
 from kivy.uix.image import Image
 from kivy.uix.gridlayout import GridLayout
 from kivy.core.audio import SoundLoader
+from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.uix.button import ButtonBehavior
 from kivymd.uix.dialog import MDDialog
+
+Window.size = (800, 480)
 
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
@@ -43,6 +46,9 @@ class MathGameApp(MDApp):
     def build(self):
         self.sm = ScreenManager()
         
+        self.click_sound = SoundLoader.load('audio/button_click.mp3')
+        self.click_sound.volume = 1
+        
         # Tambahkan loading screen dan main screen ke ScreenManager
         self.sm.add_widget(LoadingScreen(name='loading'))
         self.sm.add_widget(MainScreen(name='main'))
@@ -55,27 +61,38 @@ class MathGameApp(MDApp):
         self.sm.current = 'loading'
 
         # Pindahkan ke MainScreen setelah beberapa detik (misalnya 3 detik)
-        Clock.schedule_once(self.switch_to_main, 5)
+        Clock.schedule_once(self.switch_to_main, 15)
         
         self.sm = Builder.load_file('math.kv')
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
         if self.sound:  # Jika file musik berhasil dimuat
             self.sound.loop = True  # Set agar musik diputar berulang
-            self.sound.volume = 1
+            self.sound.volume = 0.1
             self.sound.play()  # Putar musik
         
         # Panggil animate_welcome_label setelah screen dimuat
         # Clock.schedule_once(self.animate_welcome_label, 1)
+        
         # Animasi Tombol
         Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('main').ids.mulai_button), 0.5)
 
         return self.sm
     
+    def play_click_sound(self):
+        if self.click_sound:
+            self.click_sound.play()
+    
     def on_audio_switch(self, checkbox, value):
         if value:
-            self.sound.volume = 1  # Jika checkbox aktif, volume penuh
+            if self.sound:  # Pastikan sound berhasil dimuat
+                self.sound.volume = 0.1  # Volume background lebih kecil
+            if self.click_sound:  # Pastikan click_sound berhasil dimuat
+                self.click_sound.volume = 1  # Volume penuh untuk klik
         else:
-            self.sound.volume = 0
+            if self.sound:  # Pastikan sound berhasil dimuat
+                self.sound.volume = 0  # Matikan background music
+            if self.click_sound:  # Pastikan click_sound berhasil dimuat
+                self.click_sound.volume = 0  # Matikan suara klik
     
     def switch_to_main(self, *args):
         # Pindahkan layar dari loading screen ke main screen
@@ -123,6 +140,7 @@ class MathGameApp(MDApp):
         dialog.open()
 
     def start_game(self, level):
+        self.play_click_sound()
         self.level = level
         self.score = 0
         self.current_question = 0
@@ -219,6 +237,7 @@ class MathGameApp(MDApp):
             img.size = (50, 50)
 
     def check_answer(self):
+        self.play_click_sound()
         user_answer = self.sm.get_screen('game').ids.answer.text
         score_label = self.sm.get_screen('game').ids.score_label
 
@@ -235,7 +254,7 @@ class MathGameApp(MDApp):
                 correct = user_answer == self.answer
 
             if correct:
-                self.score += 1
+                self.score += 10
                 self.show_popup("Jawaban Benar!")  # Tampilkan pop-up untuk jawaban benar
             else:
                 self.show_popup("Jawaban Salah!")  # Tampilkan pop-up untuk jawaban salah
@@ -252,7 +271,7 @@ class MathGameApp(MDApp):
             self.generate_question()
         else:
         # Perbaiki bagian ini dengan mendefinisikan result_text
-            result_text = f"KAMU MENJAWAB {self.score} DARI {self.total_questions} SOAL DENGAN BENAR"
+            result_text = f"SELAMAT! SCORE YANG KAMU DAPATKAN ADALAH {self.score}"
             self.sm.get_screen('result').ids.result_label.text = result_text
             self.sm.current = 'result'
             
@@ -261,7 +280,7 @@ class MathGameApp(MDApp):
 
         # Periksa apakah seluruh soal dijawab benar
         congrats_image = self.sm.get_screen('result').ids.congrats_image
-        if self.score == self.total_questions:
+        if self.score == 100:
             # Tampilkan gambar congratulations jika seluruh soal dijawab benar
             congrats_image.opacity = 1  # Ubah opacity menjadi 1 (gambar tampil)
             congrats_image.disabled = False  # Aktifkan gambar
@@ -272,10 +291,14 @@ class MathGameApp(MDApp):
 
     def restart_game(self):
     # Reset skor dan jumlah soal
+        self.play_click_sound()
         self.score = 0
         self.current_question = 0
         self.sm.get_screen('game').ids.answer.text = ''  # Reset input field
         self.sm.get_screen('game').ids.feedback.text = ''  # Reset feedback text
+
+        score_label = self.sm.get_screen('game').ids.score_label
+        score_label.text = "SCORE: 0"  # Reset skor di label
 
     # Pindah ke screen menu
         self.sm.current = 'menu'
