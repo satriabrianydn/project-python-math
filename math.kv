@@ -136,19 +136,19 @@ ScreenManager:
             spacing: 40
 
             ImageButton:
-                source: 'assets/buttons/button_kelas1.png'
+                source: 'assets/buttons/button_easy.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(1)
 
             ImageButton:
-                source: 'assets/buttons/button_kelas2.png'
+                source: 'assets/buttons/button_medium.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(2)
 
             ImageButton:
-                source: 'assets/buttons/button_kelas3.png'
+                source: 'assets/buttons/button_hard.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(3)
@@ -187,7 +187,6 @@ ScreenManager:
                 orientation: 'horizontal'
                 size_hint_y: None
                 height: dp(100)  # Sesuaikan tinggi sesuai kebutuhan
-                spacing: 10
                 pos_hint: {'center_x': 0.5}  # Center gambar horizontal
                 padding: [10, 10]  # Tambahkan sedikit padding jika dibutuhkan
 
@@ -197,7 +196,7 @@ ScreenManager:
                 size_hint: (None, None)
                 width: 600  # Total lebar dari ketiga tombol
                 height: "100dp"
-                pos_hint: {'center_x': 0.6}  # Pastikan tombol berada di tengah
+                pos_hint: {'center_x': 0.66}  # Pastikan tombol berada di tengah
                 padding: [0, 40]  # Tambahkan jarak antara soal dan tombol
 
                 MDRaisedButton:
@@ -224,15 +223,15 @@ ScreenManager:
                     font_size: '24sp'
                     on_release: app.check_button_answer(self)
 
-            # Timer Label
             MDLabel:
                 id: timer_label
-                text: "TIME: 30"  # Inisialisasi timer dengan 30 detik
+                text: "TIME: 60"
                 halign: 'center'
                 font_style: 'H6'
-                color: 0, 0, 0, 1
+                font_name: 'fonts/kid-games.ttf'
+                color: 1, 1, 1, 1
                 size_hint_y: None
-                height: dp(30)  # Tentukan tinggi teks agar lebih presisi
+                height: dp(30)
 
             MDLabel:
                 id: feedback
