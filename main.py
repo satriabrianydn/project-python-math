@@ -14,6 +14,8 @@ from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.uix.button import ButtonBehavior
 from kivymd.uix.dialog import MDDialog
+from random import shuffle, sample
+
 
 Window.size = (800, 480)
 
@@ -162,7 +164,7 @@ class MathGameApp(MDApp):
             self.num1 = self.num2 * randint(1, 5)  # Pastikan hasil tetap dalam batas yang lebih besar
             self.operation = '/'
 
-        # Pastikan tidak mengurangi lebih dari yang ada
+    # Pastikan tidak mengurangi lebih dari yang ada
         if self.operation == '-':
             if self.num1 < self.num2:
                 self.num1, self.num2 = self.num2, self.num1  # Menukar agar num1 selalu lebih besar
@@ -180,8 +182,8 @@ class MathGameApp(MDApp):
         self.display_images()
 
     def display_images(self):
-        images_box = self.sm.get_screen('game').ids.images_box
-        images_box.clear_widgets()  # Bersihkan gambar sebelumnya
+        images_grid = self.sm.get_screen('game').ids.images_grid
+        images_grid.clear_widgets()  # Bersihkan gambar sebelumnya
 
         # Pilih gambar acak dari daftar image_list
         image_choice = choice(image_list)
@@ -212,7 +214,7 @@ class MathGameApp(MDApp):
                     img.size = (50, 50)
                     group_layout.add_widget(img)
 
-                images_box.add_widget(group_layout)  # Tambahkan grup gambar ke layout utama
+                images_grid.add_widget(group_layout)  # Tambahkan grup gambar ke layout utama
         else:
             # Untuk operasi lain (penjumlahan, pengurangan, perkalian)
             for i in range(total_images):
@@ -224,50 +226,95 @@ class MathGameApp(MDApp):
                 if self.operation == '-' and i >= (total_images - num_transparent):
                     img.opacity = 0.5
 
-                images_box.add_widget(img)
+                images_grid.add_widget(img)
 
         # Sesuaikan tinggi dari kotak gambar berdasarkan jumlah grup
         if self.operation == '/':
-            images_box.height = (group_size * 60)  # Sesuaikan tinggi berdasarkan jumlah grup
-            images_box.size_hint = (1, 1)
+            images_grid.height = (group_size * 60)  # Sesuaikan tinggi berdasarkan jumlah grup
+            images_grid.size_hint = (1, 1)
             img.size = (50, 50)
         else:
-            images_box.height = ((total_images // 5) + 1) * 60  # Tinggi berdasarkan jumlah total gambar
-            images_box.size_hint = (1, 1)
+            images_grid.height = ((total_images // 5) + 1) * 60  # Tinggi berdasarkan jumlah total gambar
+            images_grid.size_hint = (1, 1)
             img.size = (50, 50)
 
-    def check_answer(self):
+        self.setup_answer_buttons()
+
+    def setup_answer_buttons(self):
+        correct_answer = self.answer
+
+    # Buat range untuk pilihan jawaban salah
+        range_start = int(correct_answer) - 10
+        range_end = int(correct_answer) + 10
+
+    # Pastikan ada cukup pilihan di rentang tersebut
+        available_answers = list(range(range_start, range_end + 1))
+
+    # Hapus jawaban yang benar dari daftar available_answers
+        available_answers.remove(correct_answer)
+
+    # Ambil dua jawaban salah unik dari available_answers
+        wrong_answers = sample(available_answers, 2)
+
+    # Gabungkan jawaban benar dan salah dalam satu list
+        answer_options = [correct_answer] + wrong_answers
+        shuffle(answer_options)
+
+    # Set setiap tombol dengan jawaban acak
+        self.sm.get_screen('game').ids.answer_button_1.text = str(answer_options[0])
+        self.sm.get_screen('game').ids.answer_button_2.text = str(answer_options[1])
+        self.sm.get_screen('game').ids.answer_button_3.text = str(answer_options[2])
+
+    def check_button_answer(self, instance):
         self.play_click_sound()
-        user_answer = self.sm.get_screen('game').ids.answer.text
+
+    # Periksa apakah jawaban yang dipilih benar
+        selected_answer = float(instance.text)
+        if selected_answer == self.answer:
+            self.score += 10
+            self.show_popup("Jawaban Benar!")  # Tampilkan pop-up untuk jawaban benar
+        else:
+            self.show_popup("Jawaban Salah!")  # Tampilkan pop-up untuk jawaban salah
+
+    # Update skor
         score_label = self.sm.get_screen('game').ids.score_label
-
-        if user_answer.strip() == '':
-            self.show_popup("Silakan masukkan jawaban!")  # Tampilkan pop-up jika tidak ada jawaban
-            return
-
-        try:
-            if self.operation == '/':
-                user_answer = float(user_answer)
-                correct = abs(user_answer - self.answer) < 0.01
-            else:
-                user_answer = int(user_answer)
-                correct = user_answer == self.answer
-
-            if correct:
-                self.score += 10
-                self.show_popup("Jawaban Benar!")  # Tampilkan pop-up untuk jawaban benar
-            else:
-                self.show_popup("Jawaban Salah!")  # Tampilkan pop-up untuk jawaban salah
-        except ValueError:
-            self.show_popup("Jawaban Tidak Valid!")  # Tampilkan pop-up untuk jawaban tidak valid
-
         score_label.text = f"SCORE: {self.score}"
+
+    # Tampilkan hasil setelah 1 detik
         Clock.schedule_once(self.show_result, 1)
+
+    # def check_answer(self):
+    #     self.play_click_sound()
+    #     user_answer = self.sm.get_screen('game').ids.answer.text
+    #     score_label = self.sm.get_screen('game').ids.score_label
+
+    #     if user_answer.strip() == '':
+    #         self.show_popup("Silakan masukkan jawaban!")  # Tampilkan pop-up jika tidak ada jawaban
+    #         return
+
+    #     try:
+    #         if self.operation == '/':
+    #             user_answer = float(user_answer)
+    #             correct = abs(user_answer - self.answer) < 0.01
+    #         else:
+    #             user_answer = int(user_answer)
+    #             correct = user_answer == self.answer
+
+    #         if correct:
+    #             self.score += 10
+    #             self.show_popup("Jawaban Benar!")  # Tampilkan pop-up untuk jawaban benar
+    #         else:
+    #             self.show_popup("Jawaban Salah!")  # Tampilkan pop-up untuk jawaban salah
+    #     except ValueError:
+    #         self.show_popup("Jawaban Tidak Valid!")  # Tampilkan pop-up untuk jawaban tidak valid
+
+    #     score_label.text = f"SCORE: {self.score}"
+    #     Clock.schedule_once(self.show_result, 1)
 
     def show_result(self, *args):
         self.current_question += 1
         if self.current_question < self.total_questions:
-            self.sm.get_screen('game').ids.answer.text = ''
+            # self.sm.get_screen('game').ids.answer.text = ''
             self.generate_question()
         else:
         # Perbaiki bagian ini dengan mendefinisikan result_text
@@ -294,7 +341,7 @@ class MathGameApp(MDApp):
         self.play_click_sound()
         self.score = 0
         self.current_question = 0
-        self.sm.get_screen('game').ids.answer.text = ''  # Reset input field
+        # self.sm.get_screen('game').ids.answer.text = ''  # Reset input field
         self.sm.get_screen('game').ids.feedback.text = ''  # Reset feedback text
 
         score_label = self.sm.get_screen('game').ids.score_label

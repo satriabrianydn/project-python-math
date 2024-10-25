@@ -167,8 +167,9 @@ ScreenManager:
     FloatLayout:
         MDBoxLayout:
             orientation: 'vertical'
-            padding: 20
-            spacing: 20
+            padding: [20, 40]  # Tambahkan padding atas dan bawah
+            spacing: 40  # Spacing antar elemen di dalam MDBoxLayout
+            size_hint: 1, 1
 
             MDLabel:
                 id: question
@@ -177,52 +178,51 @@ ScreenManager:
                 font_style: 'H4'
                 font_name: 'fonts/kid-games.ttf'
                 color: 1, 1, 1, 1  # Warna teks pertanyaan
+                size_hint_y: None
+                height: dp(50)  # Tentukan tinggi teks agar lebih presisi
 
             # BoxLayout untuk menempatkan gambar di tengah
             BoxLayout:
-                id: images_box
+                id: images_grid
                 orientation: 'horizontal'
                 size_hint_y: None
                 height: dp(100)  # Sesuaikan tinggi sesuai kebutuhan
                 spacing: 10
-                pos_hint: {'center_x': 0.5}  # Center the images horizontally
+                pos_hint: {'center_x': 0.5}  # Center gambar horizontal
+                padding: [10, 10]  # Tambahkan sedikit padding jika dibutuhkan
 
-            MDTextFieldRect:
-                id: answer
-                hint_text: 'Masukkan jawaban'
-                mode: 'rectangle'
-                halign: 'center'
-                input_filter: 'int'
-                multiline: False
-                size_hint: (0.8, None)
-                height: "40dp"
-                pos_hint: {'center_x': 0.5}
-                radius: [15, 15, 15, 15]
-                background_color: 1, 1, 1, 1
-                text_color: 0, 0, 0, 1
-
-            # BoxLayout untuk menempatkan tombol di bawah input box dan di tengah
-            BoxLayout:
-                orientation: 'horizontal'
-                spacing: 20
+            GridLayout:
+                cols: 3
+                spacing: 20  # Spacing antara tombol
                 size_hint: (None, None)
-                width: 500  # Total lebar dari kedua tombol
+                width: 600  # Total lebar dari ketiga tombol
                 height: "100dp"
-                pos_hint: {'center_x': 0.5}  # Pastikan tombol berada di tengah
+                pos_hint: {'center_x': 0.6}  # Pastikan tombol berada di tengah
+                padding: [0, 40]  # Tambahkan jarak antara soal dan tombol
 
-                ImageButton:
-                    source: 'assets/buttons/button_submit.png'
+                MDRaisedButton:
+                    id: answer_button_1
+                    text: "1"
                     size_hint: (None, None)
-                    size: 250, 100
-                    on_release: app.check_answer()
+                    size: 200, 100
+                    font_size: '24sp'
+                    on_release: app.check_button_answer(self)
 
-                ImageButton:
-                    source: 'assets/buttons/button_kembali.png'
+                MDRaisedButton:
+                    id: answer_button_2
+                    text: "2"
                     size_hint: (None, None)
-                    size: 250, 100
-                    on_release: 
-                        app.sm.current = 'menu'
-                        app.play_click_sound()
+                    size: 200, 100
+                    font_size: '24sp'
+                    on_release: app.check_button_answer(self)
+
+                MDRaisedButton:
+                    id: answer_button_3
+                    text: "3"
+                    size_hint: (None, None)
+                    size: 200, 100
+                    font_size: '24sp'
+                    on_release: app.check_button_answer(self)
 
             MDLabel:
                 id: feedback
@@ -242,6 +242,16 @@ ScreenManager:
             height: '30dp'
             pos_hint: {'right': 1, 'top': 1}
 
+        ImageButton:
+            id: kembali_button
+            source: 'assets/buttons/button_back.png'
+            size_hint: (None, None)
+            size: 80, 80
+            pos_hint: {'x': 0.02, 'top': 0.98}
+            on_release: 
+                app.sm.current = 'menu'
+                app.play_click_sound()
+                app.restart_game()
 
 <ResultScreen>:
     name: 'result'
