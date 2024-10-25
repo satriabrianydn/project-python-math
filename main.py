@@ -147,8 +147,39 @@ class MathGameApp(MDApp):
         self.score = 0
         self.current_question = 0
         self.total_questions = 10
+        self.time_left = 60
         self.sm.current = 'game'
+
+        self.timer_event = Clock.schedule_interval(self.update_timer, 1)
         self.generate_question()
+
+    def update_timer(self, dt):
+        if self.time_left > 0:
+            self.time_left -= 1
+            self.sm.get_screen('game').ids.timer_label.text = f"TIME: {self.time_left}"
+        else:
+            self.end_game()
+
+    def end_game(self):
+        # Stop the timer
+        Clock.unschedule(self.timer_event)
+
+        # Show the result screen
+        self.sm.current = 'result'
+        result_text = f"TIME IS UP! SCORE: {self.score}"
+        self.sm.get_screen('result').ids.result_label.text = result_text
+        
+        # Animasi Tombol
+        Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 0.5)
+
+        # Handle showing the congrats image if necessary
+        congrats_image = self.sm.get_screen('result').ids.congrats_image
+        if self.score == 100:
+            congrats_image.opacity = 1
+            congrats_image.disabled = False
+        else:
+            congrats_image.opacity = 0
+            congrats_image.disabled = True
 
     def generate_question(self):
         if self.level == 1:

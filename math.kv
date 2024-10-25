@@ -224,6 +224,16 @@ ScreenManager:
                     font_size: '24sp'
                     on_release: app.check_button_answer(self)
 
+            # Timer Label
+            MDLabel:
+                id: timer_label
+                text: "TIME: 30"  # Inisialisasi timer dengan 30 detik
+                halign: 'center'
+                font_style: 'H6'
+                color: 0, 0, 0, 1
+                size_hint_y: None
+                height: dp(30)  # Tentukan tinggi teks agar lebih presisi
+
             MDLabel:
                 id: feedback
                 text: ''
