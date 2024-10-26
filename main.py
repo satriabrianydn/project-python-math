@@ -128,11 +128,12 @@ class MathGameApp(MDApp):
         dialog = MDDialog(
             title="Info",
             text=message,
-            size_hint=(0.8, None),  # Sesuaikan lebar dialog
+            size_hint=(0.8, None),
+            radius=[20, 7, 20, 7],  # Sesuaikan lebar dialog
             buttons=[
                 MDRaisedButton(
                     text="OK",
-                    on_release=lambda x: dialog.dismiss()  # Menutup dialog saat tombol OK ditekan
+                    on_release=lambda x: dialog.dismiss(),
                 )
             ]
         )
@@ -143,7 +144,7 @@ class MathGameApp(MDApp):
         self.level = level
         self.score = 0
         self.current_question = 0
-        self.total_questions = 10
+        self.total_questions = 2
         self.time_left = 60
         self.sm.current = 'game'
 
@@ -170,13 +171,13 @@ class MathGameApp(MDApp):
         Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 0.5)
 
         # Handle showing the congrats image if necessary
-        congrats_image = self.sm.get_screen('result').ids.congrats_image
+        congrats_images = self.sm.get_screen('result').ids.congrats_images
         if self.score == 100:
-            congrats_image.opacity = 1
-            congrats_image.disabled = False
+            congrats_images.opacity = 1
+            congrats_images.disabled = False
         else:
-            congrats_image.opacity = 0
-            congrats_image.disabled = True
+            congrats_images.opacity = 0
+            congrats_images.disabled = True
 
     def generate_question(self):
             if self.level == 1:
@@ -224,7 +225,7 @@ class MathGameApp(MDApp):
         for i in range(total_images):
             img = Image(source=image_choice)
             img.size_hint = (1,1)
-            img.size = (200, 200)
+            img.size = (500, 500)
             images_grid.add_widget(img)
 
         # Sesuaikan tinggi dari kotak gambar berdasarkan jumlah total gambar
@@ -291,15 +292,15 @@ class MathGameApp(MDApp):
             Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 1)
 
         # Periksa apakah seluruh soal dijawab benar
-        congrats_image = self.sm.get_screen('result').ids.congrats_image
-        if self.score == 100:
+        congrats_images = self.sm.get_screen('result').ids.congrats_images
+        if self.score == 20:
             # Tampilkan gambar congratulations jika seluruh soal dijawab benar
-            congrats_image.opacity = 1  # Ubah opacity menjadi 1 (gambar tampil)
-            congrats_image.disabled = False  # Aktifkan gambar
+            congrats_images.opacity = 1  # Ubah opacity menjadi 1 (gambar tampil)
+            congrats_images.disabled = False  # Aktifkan gambar
         else:
             # Sembunyikan gambar jika tidak semua soal benar
-            congrats_image.opacity = 0  # Sembunyikan gambar
-            congrats_image.disabled = True  # Nonaktifkan gambar
+            congrats_images.opacity = 0  # Sembunyikan gambar
+            congrats_images.disabled = True  # Nonaktifkan gambar
 
     def restart_game(self):
     # Reset skor dan jumlah soal
