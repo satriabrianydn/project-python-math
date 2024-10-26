@@ -225,7 +225,7 @@ class MathGameApp(MDApp):
         for i in range(total_images):
             img = Image(source=image_choice)
             img.size_hint = (1,1)
-            img.size = (500, 500)
+            img.size = (1000, 1000)
             images_grid.add_widget(img)
 
         # Sesuaikan tinggi dari kotak gambar berdasarkan jumlah total gambar

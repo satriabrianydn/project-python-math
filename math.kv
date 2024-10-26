@@ -170,7 +170,7 @@ ScreenManager:
             padding: [20, 40]  # Tambahkan padding atas dan bawah
             spacing: 40  # Spacing antar elemen di dalam MDBoxLayout
             size_hint: 1, 1
-
+      
             MDLabel:
                 id: question
                 text: ''
@@ -182,49 +182,57 @@ ScreenManager:
                 height: dp(50)  # Tentukan tinggi teks agar lebih presisi
 
             # BoxLayout untuk menempatkan gambar di tengah
-            BoxLayout:
-                id: images_grid
-                orientation: 'horizontal'
+            FloatLayout:
                 size_hint_y: None
-                height: dp(100)  # Sesuaikan tinggi sesuai kebutuhan
-                pos_hint: {'center_x': 0.5}  # Center gambar horizontal
-                padding: [10, 10]  # Tambahkan sedikit padding jika dibutuhkan
+                height: dp(100)  # Sesuaikan tinggi layout tombol
+                pos_hint: {'center_x': 0.5, 'center_y': 0.3}  # Pusatkan secara horizontal dan vertikal
 
-            GridLayout:
-                cols: 3
-                spacing: 20  # Spacing antara tombol
-                size_hint: (None, None)
-                width: 600  # Total lebar dari ketiga tombol
-                height: "100dp"
-                pos_hint: {'center_x': 0.66}  # Pastikan tombol berada di tengah
-                padding: [0, 40]  # Tambahkan jarak antara soal dan tombol
+                GridLayout:
+                    id: images_grid
+                    cols: 5  # Jumlah kolom, sesuaikan sesuai kebutuhan
+                    size_hint_y: None
+                    height: dp(500)  # Sesuaikan tinggi sesuai kebutuhan
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.9}  # Center gambar horizontal
+                    padding: [10, 10]  # Tambahkan sedikit padding jika dibutuhkan
+                    spacing: 5  # Spacing antar gambar
 
-                MDRaisedButton:
-                    id: answer_button_1
-                    text: "1"
-                    size_hint: (None, None)
-                    size: 200, 100
-                    font_size: '24sp'
-                    font_name: 'fonts/kid-games.ttf'
-                    on_release: app.check_button_answer(self)
+                FloatLayout:
+                    size_hint_y: None
+                    height: dp(100)  # Sesuaikan tinggi layout tombol
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.01}  # Pusatkan secara horizontal dan vertikal
+                    
+                    MDRaisedButton:
+                        id: answer_button_1
+                        text: "1"
+                        size_hint: (None, None)
+                        size: 200, 100
+                        font_size: '30sp'
+                        font_name: 'fonts/kid-games.ttf'
+                        pos_hint: {'center_x': 0.30, 'center_y': 0.5}  # Pusatkan tombol 1
 
-                MDRaisedButton:
-                    id: answer_button_2
-                    text: "2"
-                    size_hint: (None, None)
-                    size: 200, 100
-                    font_size: '24sp'
-                    font_name: 'fonts/kid-games.ttf'
-                    on_release: app.check_button_answer(self)
+                        on_release: app.check_button_answer(self)
 
-                MDRaisedButton:
-                    id: answer_button_3
-                    text: "3"
-                    size_hint: (None, None)
-                    size: 200, 100
-                    font_size: '24sp'
-                    font_name: 'fonts/kid-games.ttf'
-                    on_release: app.check_button_answer(self)
+                    MDRaisedButton:
+                        id: answer_button_2
+                        text: "2"
+                        size_hint: (None, None)
+                        size: 200, 100
+                        font_size: '30sp'
+                        font_name: 'fonts/kid-games.ttf'
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}  # Pusatkan tombol 2
+
+                        on_release: app.check_button_answer(self)
+
+                    MDRaisedButton:
+                        id: answer_button_3
+                        text: "3"
+                        size_hint: (None, None)
+                        size: 200, 100
+                        font_size: '30sp'
+                        font_name: 'fonts/kid-games.ttf'
+                        pos_hint: {'center_x': 0.70, 'center_y': 0.5}  # Pusatkan tombol 3
+
+                        on_release: app.check_button_answer(self)
 
             MDLabel:
                 id: timer_label
