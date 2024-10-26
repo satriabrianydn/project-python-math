@@ -136,19 +136,19 @@ ScreenManager:
             spacing: 40
 
             ImageButton:
-                source: 'assets/buttons/button_kelas1.png'
+                source: 'assets/buttons/button_easy.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(1)
 
             ImageButton:
-                source: 'assets/buttons/button_kelas2.png'
+                source: 'assets/buttons/button_medium.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(2)
 
             ImageButton:
-                source: 'assets/buttons/button_kelas3.png'
+                source: 'assets/buttons/button_hard.png'
                 size_hint: (None, None)
                 size: 250, 100
                 on_release: app.start_game(3)
@@ -187,7 +187,6 @@ ScreenManager:
                 orientation: 'horizontal'
                 size_hint_y: None
                 height: dp(100)  # Sesuaikan tinggi sesuai kebutuhan
-                spacing: 10
                 pos_hint: {'center_x': 0.5}  # Center gambar horizontal
                 padding: [10, 10]  # Tambahkan sedikit padding jika dibutuhkan
 
@@ -197,7 +196,7 @@ ScreenManager:
                 size_hint: (None, None)
                 width: 600  # Total lebar dari ketiga tombol
                 height: "100dp"
-                pos_hint: {'center_x': 0.6}  # Pastikan tombol berada di tengah
+                pos_hint: {'center_x': 0.66}  # Pastikan tombol berada di tengah
                 padding: [0, 40]  # Tambahkan jarak antara soal dan tombol
 
                 MDRaisedButton:
@@ -206,6 +205,7 @@ ScreenManager:
                     size_hint: (None, None)
                     size: 200, 100
                     font_size: '24sp'
+                    font_name: 'fonts/kid-games.ttf'
                     on_release: app.check_button_answer(self)
 
                 MDRaisedButton:
@@ -214,6 +214,7 @@ ScreenManager:
                     size_hint: (None, None)
                     size: 200, 100
                     font_size: '24sp'
+                    font_name: 'fonts/kid-games.ttf'
                     on_release: app.check_button_answer(self)
 
                 MDRaisedButton:
@@ -222,7 +223,18 @@ ScreenManager:
                     size_hint: (None, None)
                     size: 200, 100
                     font_size: '24sp'
+                    font_name: 'fonts/kid-games.ttf'
                     on_release: app.check_button_answer(self)
+
+            MDLabel:
+                id: timer_label
+                text: "TIME: 60"
+                halign: 'center'
+                font_style: 'H6'
+                font_name: 'fonts/kid-games.ttf'
+                color: 1, 1, 1, 1
+                size_hint_y: None
+                height: dp(30)
 
             MDLabel:
                 id: feedback
@@ -276,14 +288,33 @@ ScreenManager:
             font_name: 'fonts/kid-games.ttf'
             color: 1, 1, 1, 1
 
-        ImageButton:
-            id: congrats_image
-            source: 'images/star.png'
+        MDBoxLayout:
+            id: congrats_images
+            orientation: 'horizontal'
+            spacing: 15
             size_hint: (None, None)
-            size: 250, 250
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            width: 350
+            height: 150
+            pos_hint: {'center_x': 0.5}
             opacity: 0
-            disabled: True
+
+            ImageButton:
+                source: 'images/star.png'
+                size_hint: (None, None)
+                size: 100, 100
+                disabled: True
+
+            ImageButton:
+                source: 'images/star.png'
+                size_hint: (None, None)
+                size: 100, 100
+                disabled: True
+
+            ImageButton:
+                source: 'images/star.png'
+                size_hint: (None, None)
+                size: 100, 100
+                disabled: True
 
         ImageButton:
             id: kembali_button

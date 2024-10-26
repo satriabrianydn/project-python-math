@@ -72,9 +72,6 @@ class MathGameApp(MDApp):
             self.sound.volume = 0.1
             self.sound.play()  # Putar musik
         
-        # Panggil animate_welcome_label setelah screen dimuat
-        # Clock.schedule_once(self.animate_welcome_label, 1)
-        
         # Animasi Tombol
         Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('main').ids.mulai_button), 0.5)
 
@@ -131,11 +128,12 @@ class MathGameApp(MDApp):
         dialog = MDDialog(
             title="Info",
             text=message,
-            size_hint=(0.8, None),  # Sesuaikan lebar dialog
+            size_hint=(0.8, None),
+            radius=[20, 7, 20, 7],  # Sesuaikan lebar dialog
             buttons=[
                 MDRaisedButton(
                     text="OK",
-                    on_release=lambda x: dialog.dismiss()  # Menutup dialog saat tombol OK ditekan
+                    on_release=lambda x: dialog.dismiss(),
                 )
             ]
         )
@@ -146,40 +144,72 @@ class MathGameApp(MDApp):
         self.level = level
         self.score = 0
         self.current_question = 0
-        self.total_questions = 10
+        self.total_questions = 2
+        self.time_left = 60
         self.sm.current = 'game'
+
+        self.timer_event = Clock.schedule_interval(self.update_timer, 1)
         self.generate_question()
 
-    def generate_question(self):
-        if self.level == 1:
-            self.num1 = randint(1, 5)  # Angka untuk Kelas 1
-            self.num2 = randint(1, 5)
-            self.operation = choice(['+', '-'])
-        elif self.level == 2:
-            self.num1 = randint(1, 10)
-            self.num2 = randint(1, 5)  # Batas pengurangan lebih kecil
-            self.operation = '*'
-        elif self.level == 3:
-            self.num2 = randint(1, 10)
-            self.num1 = self.num2 * randint(1, 5)  # Pastikan hasil tetap dalam batas yang lebih besar
-            self.operation = '/'
-
-    # Pastikan tidak mengurangi lebih dari yang ada
-        if self.operation == '-':
-            if self.num1 < self.num2:
-                self.num1, self.num2 = self.num2, self.num1  # Menukar agar num1 selalu lebih besar
-
-        if self.operation == '/':
-            self.answer = self.num1 / self.num2
+    def update_timer(self, dt):
+        if self.time_left > 0:
+            self.time_left -= 1
+            self.sm.get_screen('game').ids.timer_label.text = f"TIME: {self.time_left}"
         else:
-            self.answer = eval(f"{self.num1} {self.operation} {self.num2}")
+            self.end_game()
 
-        question_text = f"{self.num1} {self.operation} {self.num2} = ?"
-        self.sm.get_screen('game').ids.question.text = question_text
-        self.sm.get_screen('game').ids.feedback.text = ''
+    def end_game(self):
+        # Stop the timer
+        Clock.unschedule(self.timer_event)
 
-        # Menampilkan gambar sesuai angka
-        self.display_images()
+        # Show the result screen
+        self.sm.current = 'result'
+        result_text = f"WAKTU HABIS! SKOR YANG KAMU DAPATKAN ADALAH: {self.score}"
+        self.sm.get_screen('result').ids.result_label.text = result_text
+        
+        # Animasi Tombol
+        Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 0.5)
+
+        # Handle showing the congrats image if necessary
+        congrats_images = self.sm.get_screen('result').ids.congrats_images
+        if self.score == 100:
+            congrats_images.opacity = 1
+            congrats_images.disabled = False
+        else:
+            congrats_images.opacity = 0
+            congrats_images.disabled = True
+
+    def generate_question(self):
+            if self.level == 1:
+            # Penambahan untuk Level 1
+                self.num1 = randint(1, 5)
+                self.num2 = randint(1, 5)
+                self.operation = '+'
+                question_text = f"{self.num1} + {self.num2} = ?"
+                self.answer = self.num1 + self.num2
+        
+            elif self.level == 2:
+            # Ekspresi dengan tanda kurung untuk Level 2
+                self.num1 = randint(1, 5)
+                self.num2 = randint(1, 5)
+                self.num3 = randint(1, 5)
+                question_text = f"{self.num1} + ({self.num2} * {self.num3}) = ?"
+                self.answer = self.num1 + (self.num2 * self.num3)
+        
+            elif self.level == 3:
+            # Ekspresi campuran tanpa tanda kurung untuk Level 3
+                self.num1 = randint(1, 5)
+                self.num2 = randint(1, 5)
+                self.num3 = randint(1, 5)
+                question_text = f"{self.num1} + {self.num2} * {self.num3} = ?"
+                self.answer = self.num1 + (self.num2 * self.num3)
+
+        # Tampilkan soal di layar
+            self.sm.get_screen('game').ids.question.text = question_text
+            self.sm.get_screen('game').ids.feedback.text = ''
+
+        # Tampilkan gambar sesuai angka
+            self.display_images()
 
     def display_images(self):
         images_grid = self.sm.get_screen('game').ids.images_grid
@@ -187,56 +217,20 @@ class MathGameApp(MDApp):
 
         # Pilih gambar acak dari daftar image_list
         image_choice = choice(image_list)
-
-        total_images = 0
-        if self.operation == '+':
-            total_images = self.num1 + self.num2
-        elif self.operation == '-':
-            total_images = self.num1  # Menampilkan sebanyak num1 gambar
-            transparent_images = self.num2  # Jumlah gambar yang akan ditransparasikan (dikurangi)
-        elif self.operation == '*':
-            total_images = self.num1 * self.num2
-        elif self.operation == '/':
-            total_images = self.num1  # Total gambar yang akan ditampilkan untuk pembagian
-            group_size = self.num2  # Jumlah gambar dalam setiap grup
-
-        num_transparent = self.num2 if self.operation == '-' else 0
         
-        # Tampilkan gambar sesuai operasi
-        if self.operation == '/':
-            # Tampilkan gambar dalam grup untuk operasi pembagian
-            for group in range(group_size):
-                group_layout = MDBoxLayout(orientation='horizontal', spacing=1)  # Tambahkan spasi antar grup
+        # Tentukan jumlah gambar berdasarkan hasil dari soal
+        total_images = int(self.answer)  # Total gambar sesuai jawaban
+       
+        # Tampilkan gambar berdasarkan total_images
+        for i in range(total_images):
+            img = Image(source=image_choice)
+            img.size_hint = (1,1)
+            img.size = (500, 500)
+            images_grid.add_widget(img)
 
-                for _ in range(self.num1 // self.num2):  # Setiap grup akan memiliki sejumlah gambar
-                    img = Image(source=image_choice)
-                    img.size_hint = (1, 1)
-                    img.size = (50, 50)
-                    group_layout.add_widget(img)
-
-                images_grid.add_widget(group_layout)  # Tambahkan grup gambar ke layout utama
-        else:
-            # Untuk operasi lain (penjumlahan, pengurangan, perkalian)
-            for i in range(total_images):
-                img = Image(source=image_choice)
-                img.size_hint = (1, 1)
-                img.size = (50, 50)
-
-                # Jika operasi pengurangan, buat beberapa gambar menjadi transparan
-                if self.operation == '-' and i >= (total_images - num_transparent):
-                    img.opacity = 0.5
-
-                images_grid.add_widget(img)
-
-        # Sesuaikan tinggi dari kotak gambar berdasarkan jumlah grup
-        if self.operation == '/':
-            images_grid.height = (group_size * 60)  # Sesuaikan tinggi berdasarkan jumlah grup
-            images_grid.size_hint = (1, 1)
-            img.size = (50, 50)
-        else:
-            images_grid.height = ((total_images // 5) + 1) * 60  # Tinggi berdasarkan jumlah total gambar
-            images_grid.size_hint = (1, 1)
-            img.size = (50, 50)
+        # Sesuaikan tinggi dari kotak gambar berdasarkan jumlah total gambar
+        images_grid.height = ((total_images // 5) + 1) * 60  # Sesuaikan tinggi grid
+        images_grid.size_hint = (1, 1)
 
         self.setup_answer_buttons()
 
@@ -283,34 +277,6 @@ class MathGameApp(MDApp):
     # Tampilkan hasil setelah 1 detik
         Clock.schedule_once(self.show_result, 1)
 
-    # def check_answer(self):
-    #     self.play_click_sound()
-    #     user_answer = self.sm.get_screen('game').ids.answer.text
-    #     score_label = self.sm.get_screen('game').ids.score_label
-
-    #     if user_answer.strip() == '':
-    #         self.show_popup("Silakan masukkan jawaban!")  # Tampilkan pop-up jika tidak ada jawaban
-    #         return
-
-    #     try:
-    #         if self.operation == '/':
-    #             user_answer = float(user_answer)
-    #             correct = abs(user_answer - self.answer) < 0.01
-    #         else:
-    #             user_answer = int(user_answer)
-    #             correct = user_answer == self.answer
-
-    #         if correct:
-    #             self.score += 10
-    #             self.show_popup("Jawaban Benar!")  # Tampilkan pop-up untuk jawaban benar
-    #         else:
-    #             self.show_popup("Jawaban Salah!")  # Tampilkan pop-up untuk jawaban salah
-    #     except ValueError:
-    #         self.show_popup("Jawaban Tidak Valid!")  # Tampilkan pop-up untuk jawaban tidak valid
-
-    #     score_label.text = f"SCORE: {self.score}"
-    #     Clock.schedule_once(self.show_result, 1)
-
     def show_result(self, *args):
         self.current_question += 1
         if self.current_question < self.total_questions:
@@ -318,34 +284,38 @@ class MathGameApp(MDApp):
             self.generate_question()
         else:
         # Perbaiki bagian ini dengan mendefinisikan result_text
-            result_text = f"SELAMAT! SCORE YANG KAMU DAPATKAN ADALAH {self.score}"
+            result_text = f"SELAMAT! SKOR YANG KAMU DAPATKAN ADALAH {self.score}"
             self.sm.get_screen('result').ids.result_label.text = result_text
             self.sm.current = 'result'
             
             # Animasi Tombol
-            Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 0.5)
+            Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 1)
 
         # Periksa apakah seluruh soal dijawab benar
-        congrats_image = self.sm.get_screen('result').ids.congrats_image
-        if self.score == 100:
+        congrats_images = self.sm.get_screen('result').ids.congrats_images
+        if self.score == 20:
             # Tampilkan gambar congratulations jika seluruh soal dijawab benar
-            congrats_image.opacity = 1  # Ubah opacity menjadi 1 (gambar tampil)
-            congrats_image.disabled = False  # Aktifkan gambar
+            congrats_images.opacity = 1  # Ubah opacity menjadi 1 (gambar tampil)
+            congrats_images.disabled = False  # Aktifkan gambar
         else:
             # Sembunyikan gambar jika tidak semua soal benar
-            congrats_image.opacity = 0  # Sembunyikan gambar
-            congrats_image.disabled = True  # Nonaktifkan gambar
+            congrats_images.opacity = 0  # Sembunyikan gambar
+            congrats_images.disabled = True  # Nonaktifkan gambar
 
     def restart_game(self):
     # Reset skor dan jumlah soal
         self.play_click_sound()
         self.score = 0
         self.current_question = 0
-        # self.sm.get_screen('game').ids.answer.text = ''  # Reset input field
         self.sm.get_screen('game').ids.feedback.text = ''  # Reset feedback text
-
         score_label = self.sm.get_screen('game').ids.score_label
         score_label.text = "SCORE: 0"  # Reset skor di label
+    
+    # Reset timer ke 60 dan hentikan timer event jika berjalan
+        self.time_left = 60
+        if hasattr(self, 'timer_event'):
+            Clock.unschedule(self.timer_event)  # Hentikan timer
+        self.sm.get_screen('game').ids.timer_label.text = f"TIME: {self.time_left}"  # Tampilkan waktu yang direset
 
     # Pindah ke screen menu
         self.sm.current = 'menu'
