@@ -21,3 +21,5 @@ $ pip install kivy kivymd
 $ py main.py
 ```
 5. Done!
+
+Bug are still not fixed
