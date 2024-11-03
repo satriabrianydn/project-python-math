@@ -1,9 +1,10 @@
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivymd.app import MDApp
-from kivymd.uix.button import MDRaisedButton
-from kivymd.uix.label import MDLabel
-from kivymd.uix.boxlayout import MDBoxLayout
+from kivy.app import App
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.popup import Popup
 from kivy.uix.checkbox import CheckBox
 from kivy.clock import Clock
 from random import randint, choice
@@ -13,11 +14,7 @@ from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.uix.button import ButtonBehavior
-from kivymd.uix.dialog import MDDialog
 from random import shuffle, sample
-
-
-Window.size = (800, 480)
 
 # Daftar gambar
 image_list = ['images/apple.png', 'images/banana.png', 'images/star.png']
@@ -29,7 +26,20 @@ class LoadingScreen(Screen):
     pass
 
 class MainScreen(Screen):
-    pass
+    def start_game(self):
+        self.manager.get_screen('main')
+        self.manager.current = 'main'
+    
+    def pulsate_button(self, button):
+        min_size = (button.size[0] * 1, button.size[1] * 1)
+        max_size = (button.size[0] * 1.2, button.size[1] * 1.2)
+        anim = Animation(size=max_size, duration=0.5) + Animation(size=min_size, duration=0.5)
+        anim.repeat = True  # Make it repeat indefinitely
+        anim.start(button)
+
+    def on_enter(self):
+        self.pulsate_button(self.ids.mulai_button)
+        self.pulsate_button(self.ids.settings_button)
 
 class SettingsScreen(Screen):
     def __init__(self, **kwargs):
@@ -44,36 +54,29 @@ class GameScreen(Screen):
 class ResultScreen(Screen):
     pass
 
-class MathGameApp(MDApp):
+class MathGameApp(App):
     def build(self):
-        self.sm = ScreenManager()
+        self.sm = Builder.load_file('math.kv')
         
         self.click_sound = SoundLoader.load('audio/button_click.mp3')
         self.click_sound.volume = 1
         
-        # Tambahkan loading screen dan main screen ke ScreenManager
-        self.sm.add_widget(LoadingScreen(name='loading'))
-        self.sm.add_widget(MainScreen(name='main'))
-        self.sm.add_widget(SettingsScreen(name='settings'))
-        self.sm.add_widget(MenuScreen(name='menu'))
-        self.sm.add_widget(GameScreen(name='game'))
-        self.sm.add_widget(ResultScreen(name='result'))
-
         # Set layar awal ke loading screen
         self.sm.current = 'loading'
 
         # Pindahkan ke MainScreen setelah beberapa detik (misalnya 3 detik)
-        Clock.schedule_once(self.switch_to_main, 15)
+        Clock.schedule_once(self.switch_to_main, 5)
         
-        self.sm = Builder.load_file('math.kv')
+        
         self.sound = SoundLoader.load('audio/background.mp3')  # Muat file musik latar
         if self.sound:  # Jika file musik berhasil dimuat
             self.sound.loop = True  # Set agar musik diputar berulang
-            self.sound.volume = 0.1
+            self.sound.volume = 1
             self.sound.play()  # Putar musik
         
         # Animasi Tombol
-        Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('main').ids.mulai_button), 0.5)
+        # Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('main').ids.mulai_button), 0.5)
+        # Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('main').ids.settings_button), 0.5)
 
         return self.sm
     
@@ -83,68 +86,35 @@ class MathGameApp(MDApp):
     
     def on_audio_switch(self, checkbox, value):
         if value:
-            if self.sound:  # Pastikan sound berhasil dimuat
-                self.sound.volume = 0.1  # Volume background lebih kecil
-            if self.click_sound:  # Pastikan click_sound berhasil dimuat
-                self.click_sound.volume = 1  # Volume penuh untuk klik
+            if self.sound: 
+                self.sound.volume = 1 
+            if self.click_sound:  
+                self.click_sound.volume = 1  
         else:
-            if self.sound:  # Pastikan sound berhasil dimuat
-                self.sound.volume = 0  # Matikan background music
-            if self.click_sound:  # Pastikan click_sound berhasil dimuat
+            if self.sound:  
+                self.sound.volume = 0  
+            if self.click_sound:  
                 self.click_sound.volume = 0  # Matikan suara klik
     
     def switch_to_main(self, *args):
         # Pindahkan layar dari loading screen ke main screen
         self.sm.current = 'main'
     
-    def animate_welcome_label(self, *args):
-        # Ambil label dari MainScreen menggunakan ID yang sudah ditambahkan
-        welcome_label = self.sm.get_screen('main').ids.welcome_label
-
-        # Animasi fade in
-        anim = Animation(opacity=1, duration=1)  # Fade in (muncul)
-        anim.start(welcome_label)
-
-        # Animasi loop naik turun
-        loop_anim = Animation(y=200, duration=2)  # Gerakan naik
-        loop_anim += Animation(y=100, duration=2)  # Gerakan turun
-        loop_anim.repeat = True  # Loop animasi naik-turun
-        loop_anim.start(welcome_label)
-        
-    def animate_button_blink(self, button):
-        # Animasi zoom out (perkecil tombol)
-        anim = Animation(size=(230, 90), duration=0.5)  
-        
-        # Animasi zoom in (perbesar tombol)
-        anim += Animation(size=(270, 110), duration=0.5)  
-        
-        # Ulangi animasi terus menerus
-        anim.repeat = True
-        
-        # Mulai animasi
-        anim.start(button)
-
     def show_popup(self, message):
-        dialog = MDDialog(
+        popup = Popup(
             title="Info",
-            text=message,
+            content=Label(text=message),
             size_hint=(0.8, None),
-            radius=[20, 7, 20, 7],  # Sesuaikan lebar dialog
-            buttons=[
-                MDRaisedButton(
-                    text="OK",
-                    on_release=lambda x: dialog.dismiss(),
-                )
-            ]
+            size=(400, 200)
         )
-        dialog.open()
+        popup.open()
 
     def start_game(self, level):
         self.play_click_sound()
         self.level = level
         self.score = 0
         self.current_question = 0
-        self.total_questions = 2
+        self.total_questions = 10
         self.time_left = 60
         self.sm.current = 'game'
 
@@ -159,57 +129,142 @@ class MathGameApp(MDApp):
             self.end_game()
 
     def end_game(self):
-        # Stop the timer
-        Clock.unschedule(self.timer_event)
+        if self.timer_event:
+            Clock.unschedule(self.timer_event)
+            self.timer_event = None
 
-        # Show the result screen
-        self.sm.current = 'result'
-        result_text = f"WAKTU HABIS! SKOR YANG KAMU DAPATKAN ADALAH: {self.score}"
-        self.sm.get_screen('result').ids.result_label.text = result_text
-        
-        # Animasi Tombol
-        Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 0.5)
+        score = self.sm.get_screen('result')  # Ganti self.manager dengan self.sm
+        score.ids.score_label.text = f"SELAMAT! SKOR YANG KAMU DAPATKAN ADALAH {self.score}"
+        self.sm.current = 'result'  # Ganti sm.current dengan self.sm.current
 
-        # Handle showing the congrats image if necessary
-        congrats_images = self.sm.get_screen('result').ids.congrats_images
+        congrats_images = score.ids.congrats_images
+        star1 = score.ids.star1
+        star2 = score.ids.star2
+        star3 = score.ids.star3
+
         if self.score == 100:
             congrats_images.opacity = 1
             congrats_images.disabled = False
+            star1.opacity = 1
+            star2.opacity = 1
+            star3.opacity = 1
+            star1.disabled = False
+            star2.disabled = False
+            star3.disabled = False
+
+        elif 50 <= self.score <= 90:
+            congrats_images.opacity = 1
+            congrats_images.disabled = False
+            star1.opacity = 1
+            star2.opacity = 0
+            star3.opacity = 1
+            star1.disabled = False
+            star2.disabled = False
+            star3.disabled = True
+
+        elif 10 <= self.score <= 40:
+            congrats_images.opacity = 1
+            congrats_images.disabled = False
+            star1.opacity = 0
+            star2.opacity = 1
+            star3.opacity = 0
+            star1.disabled = False
+            star2.disabled = True
+            star3.disabled = True
+
         else:
             congrats_images.opacity = 0
             congrats_images.disabled = True
+            star1.opacity = 0
+            star2.opacity = 0
+            star3.opacity = 0
+            star1.disabled = True
+            star2.disabled = True
+            star3.disabled = True
+
+        # congrats_images = self.sm.get_screen('result').ids.congrats_images
+
+        # # Pastikan congrats_images tidak None
+        # if congrats_images:
+        #     star1 = congrats_images.ids.get('star1', None)
+        #     star2 = congrats_images.ids.get('star2', None)
+        #     star3 = congrats_images.ids.get('star3', None)
+
+        #     if star1 is None or star2 is None or star3 is None:
+        #         print("Salah satu gambar bintang tidak ditemukan")
+        #         return
+
+        #     # Pastikan congrats_images muncul (bisa mengatur opacity)
+        #     congrats_images.opacity = 1
+        #     congrats_images.disabled = False
+
+        #     # Jika semua benar (10/10), tampilkan 3 bintang
+        #     if self.score == 100:
+        #         star1.opacity = 1
+        #         star1.disabled = False
+        #         star2.opacity = 1
+        #         star2.disabled = False
+        #         star3.opacity = 1
+        #         star3.disabled = False
+        #     # Jika benar antara 5 sampai 9, tampilkan 2 bintang
+        #     elif 50 <= self.score < 100:
+        #         star1.opacity = 1
+        #         star1.disabled = False
+        #         star2.opacity = 0
+        #         star2.disabled = False
+        #         star3.opacity = 1
+        #         star3.disabled = True
+        #     # Jika benar antara 1 sampai 4, tampilkan 1 bintang
+        #     elif 10 <= self.score < 50:
+        #         star1.opacity = 0
+        #         star1.disabled = False
+        #         star2.opacity = 1
+        #         star2.disabled = True
+        #         star3.opacity = 0
+        #         star3.disabled = True
+        #     # Jika tidak ada jawaban benar (0), jangan tampilkan bintang
+        #     else:
+        #         star1.opacity = 0
+        #         star1.disabled = True
+        #         star2.opacity = 0
+        #         star2.disabled = True
+        #         star3.opacity = 0
+        #         star3.disabled = True
+            
+        #     congrats_images.canvas.ask_update()
 
     def generate_question(self):
-            if self.level == 1:
+        if self.level == 1:
             # Penambahan untuk Level 1
-                self.num1 = randint(1, 5)
-                self.num2 = randint(1, 5)
-                self.operation = '+'
-                question_text = f"{self.num1} + {self.num2} = ?"
-                self.answer = self.num1 + self.num2
+            self.num1 = randint(1, 5)
+            self.num2 = randint(1, 5)
+            self.operation = '+'
+            question_text = f"{self.num1} + {self.num2} = ?"
+            self.answer = self.num1 + self.num2
         
-            elif self.level == 2:
+        elif self.level == 2:
             # Ekspresi dengan tanda kurung untuk Level 2
-                self.num1 = randint(1, 5)
-                self.num2 = randint(1, 5)
-                self.num3 = randint(1, 5)
-                question_text = f"{self.num1} + ({self.num2} * {self.num3}) = ?"
-                self.answer = self.num1 + (self.num2 * self.num3)
+            self.num1 = randint(1, 5)
+            self.num2 = randint(1, 5)
+            self.num3 = randint(1, 5)
+            question_text = f"{self.num1} + ({self.num2} * {self.num3}) = ?"
+            self.answer = self.num1 + (self.num2 * self.num3)
         
-            elif self.level == 3:
+        elif self.level == 3:
             # Ekspresi campuran tanpa tanda kurung untuk Level 3
-                self.num1 = randint(1, 5)
-                self.num2 = randint(1, 5)
-                self.num3 = randint(1, 5)
-                question_text = f"{self.num1} + {self.num2} * {self.num3} = ?"
-                self.answer = self.num1 + (self.num2 * self.num3)
+            self.num1 = randint(1, 5)
+            self.num2 = randint(1, 5)
+            self.num3 = randint(1, 5)
+            question_text = f"{self.num1} + {self.num2} * {self.num3} = ?"
+            self.answer = self.num1 + (self.num2 * self.num3)
 
         # Tampilkan soal di layar
-            self.sm.get_screen('game').ids.question.text = question_text
-            self.sm.get_screen('game').ids.feedback.text = ''
-
+        self.sm.get_screen('game').ids.question.text = question_text
+        self.sm.get_screen('game').ids.feedback.text = ''
+        
         # Tampilkan gambar sesuai angka
-            self.display_images()
+        self.display_images()
+
 
     def display_images(self):
         images_grid = self.sm.get_screen('game').ids.images_grid
@@ -225,7 +280,7 @@ class MathGameApp(MDApp):
         for i in range(total_images):
             img = Image(source=image_choice)
             img.size_hint = (1,1)
-            img.size = (1000, 1000)
+            img.size = (500, 500)
             images_grid.add_widget(img)
 
         # Sesuaikan tinggi dari kotak gambar berdasarkan jumlah total gambar
@@ -280,44 +335,68 @@ class MathGameApp(MDApp):
     def show_result(self, *args):
         self.current_question += 1
         if self.current_question < self.total_questions:
-            # self.sm.get_screen('game').ids.answer.text = ''
+            # Lanjut ke pertanyaan berikutnya jika belum selesai
             self.generate_question()
         else:
-        # Perbaiki bagian ini dengan mendefinisikan result_text
-            result_text = f"SELAMAT! SKOR YANG KAMU DAPATKAN ADALAH {self.score}"
-            self.sm.get_screen('result').ids.result_label.text = result_text
+            # Tampilkan hasil jika semua pertanyaan selesai
+            score_label = f"SELAMAT! SKOR YANG KAMU DAPATKAN ADALAH {self.score}"
+            self.sm.get_screen('result').ids.score_label.text = score_label
             self.sm.current = 'result'
-            
-            # Animasi Tombol
-            Clock.schedule_once(lambda dt: self.animate_button_blink(self.sm.get_screen('result').ids.kembali_button), 1)
 
-        # Periksa apakah seluruh soal dijawab benar
-        congrats_images = self.sm.get_screen('result').ids.congrats_images
-        if self.score == 20:
-            # Tampilkan gambar congratulations jika seluruh soal dijawab benar
-            congrats_images.opacity = 1  # Ubah opacity menjadi 1 (gambar tampil)
-            congrats_images.disabled = False  # Aktifkan gambar
-        else:
-            # Sembunyikan gambar jika tidak semua soal benar
-            congrats_images.opacity = 0  # Sembunyikan gambar
-            congrats_images.disabled = True  # Nonaktifkan gambar
+            # Tampilkan bintang berdasarkan jumlah skor
+            congrats_images = self.sm.get_screen('result').ids.congrats_images
+            star1 = self.sm.get_screen('result').ids.star1
+            star2 = self.sm.get_screen('result').ids.star2
+            star3 = self.sm.get_screen('result').ids.star3
+
+            # Pastikan kontainer bintang muncul
+            congrats_images.opacity = 1
+            congrats_images.disabled = False
+
+            # Tampilkan jumlah bintang berdasarkan skor
+            if self.score == 100:  # 10/10 benar
+                star1.opacity = 1
+                star1.disabled = False
+                star2.opacity = 1
+                star2.disabled = False
+                star3.opacity = 1
+                star3.disabled = False
+            elif 50 <= self.score < 100:  # 5 sampai 9 benar
+                star1.opacity = 1
+                star1.disabled = False
+                star2.opacity = 0
+                star2.disabled = True
+                star3.opacity = 1
+                star3.disabled = False
+            elif 10 <= self.score < 50:  # 1 sampai 4 benar
+                star1.opacity = 0
+                star1.disabled = True
+                star2.opacity = 1
+                star2.disabled = False
+                star3.opacity = 0
+                star3.disabled = True
+            else:  # Jika tidak ada jawaban yang benar (0 poin)
+                star1.opacity = 0
+                star1.disabled = True
+                star2.opacity = 0
+                star2.disabled = True
+                star3.opacity = 0
+                star3.disabled = True
+
+            # Paksa pembaruan visual agar perubahan segera terlihat
+            congrats_images.canvas.ask_update()
 
     def restart_game(self):
-    # Reset skor dan jumlah soal
         self.play_click_sound()
         self.score = 0
         self.current_question = 0
         self.sm.get_screen('game').ids.feedback.text = ''  # Reset feedback text
         score_label = self.sm.get_screen('game').ids.score_label
         score_label.text = "SCORE: 0"  # Reset skor di label
-    
-    # Reset timer ke 60 dan hentikan timer event jika berjalan
         self.time_left = 60
         if hasattr(self, 'timer_event'):
             Clock.unschedule(self.timer_event)  # Hentikan timer
         self.sm.get_screen('game').ids.timer_label.text = f"TIME: {self.time_left}"  # Tampilkan waktu yang direset
-
-    # Pindah ke screen menu
         self.sm.current = 'menu'
 
 if __name__ == '__main__':
